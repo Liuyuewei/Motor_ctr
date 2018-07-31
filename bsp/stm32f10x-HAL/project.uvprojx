@@ -377,9 +377,23 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
+              <FileName>common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\common.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\motor.c</FilePath>
             </File>
           </Files>
         </Group>

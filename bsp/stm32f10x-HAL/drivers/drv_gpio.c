@@ -17,6 +17,9 @@
 #include <rtdevice.h>
 #include <board.h>
 #include <rtthread.h>
+
+#include "common.h"	
+
 #ifdef RT_USING_PIN
 
 #define __STM32_PIN(index, gpio, gpio_index) {index, GPIO##gpio##_CLK_ENABLE, GPIO##gpio, GPIO_PIN_##gpio_index}
@@ -87,6 +90,31 @@ struct pin_index
     GPIO_TypeDef *gpio;
     uint32_t pin;
 };
+
+
+//	eLed_run = 0,						//LED_RUN		PA2
+//	eBeep_ctrl,                         //蜂鸣器			PB1
+//	
+//	/********卸杯电机GPIO********/
+//	eM1_en,								//卸杯电机使能	PC8
+//	eA1_P,								//卸杯电机A1+	PC7	
+//	eA1_N,								//卸杯电机A1-	PB15
+//	eB1_P,								//卸杯电机B1+	PB14
+//	eB1_N,								//卸杯电机B1-	PC6
+//	
+//	/********锁轴电机GPIO********/
+//	eM2_en,								//锁轴电机使能	PA11
+//	eA2_P,								//锁轴电机A2+	PA8
+//	eA2_N,								//锁轴电机A2-	PB13
+//	eB2_P,								//锁轴电机B2+	PB12
+//	eB2_N,								//锁轴电机B2-	PC9
+//	
+//	/********按键GPIO********/
+//	eKEY_F,								//电机正转		PA7
+//	eKEY_R,								//电机反转		PC5
+//	eKEY_S,								//电机停止		PB0
+
+
 
 static const struct pin_index pins[] =
 {
@@ -182,71 +210,25 @@ static const struct pin_index pins[] =
 
 #endif
 #if (STM32F10X_PIN_NUMBERS == 64)
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(2, C, 13),
-    __STM32_PIN(3, C, 14),
-    __STM32_PIN(4, C, 15),
-    __STM32_PIN(5, D, 0),
-    __STM32_PIN(6, D, 1),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(8, C, 0),
-    __STM32_PIN(9, C, 1),
-    __STM32_PIN(10, C, 2),
-    __STM32_PIN(11, C, 3),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(14, A, 0),
-    __STM32_PIN(15, A, 1),
-    __STM32_PIN(16, A, 2),
-    __STM32_PIN(17, A, 3),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(20, A, 4),
-    __STM32_PIN(21, A, 5),
-    __STM32_PIN(22, A, 6),
-    __STM32_PIN(23, A, 7),
-    __STM32_PIN(24, C, 4),
-    __STM32_PIN(25, C, 5),
-    __STM32_PIN(26, B, 0),
-    __STM32_PIN(27, B, 1),
-    __STM32_PIN(28, B, 2),
-    __STM32_PIN(29, B, 10),
-    __STM32_PIN(30, B, 11),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(33, B, 12),
-    __STM32_PIN(34, B, 13),
-    __STM32_PIN(35, B, 14),
-    __STM32_PIN(36, B, 15),
-    __STM32_PIN(37, C, 6),
-    __STM32_PIN(38, C, 7),
-    __STM32_PIN(39, C, 8),
-    __STM32_PIN(40, C, 9),
-    __STM32_PIN(41, A, 8),
-    __STM32_PIN(42, A, 9),
-    __STM32_PIN(43, A, 10),
-    __STM32_PIN(44, A, 11),
-    __STM32_PIN(45, A, 12),
-    __STM32_PIN(46, A, 13),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(49, A, 14),
-    __STM32_PIN(50, A, 15),
-    __STM32_PIN(51, C, 10),
-    __STM32_PIN(52, C, 11),
-    __STM32_PIN(53, C, 12),
-    __STM32_PIN(54, D, 2),
-    __STM32_PIN(55, B, 3),
-    __STM32_PIN(56, B, 4),
-    __STM32_PIN(57, B, 5),
-    __STM32_PIN(58, B, 6),
-    __STM32_PIN(59, B, 7),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN(61, B, 8),
-    __STM32_PIN(62, B, 9),
-    __STM32_PIN_DEFAULT,
-    __STM32_PIN_DEFAULT,
+    __STM32_PIN(0, A, 2),
+	__STM32_PIN(1, B, 1),
+	
+	__STM32_PIN(2, C, 8),	
+	__STM32_PIN(3, C, 7),
+	__STM32_PIN(4, B,15),
+	__STM32_PIN(5, B,14),
+	__STM32_PIN(6, C, 6),
+	
+	__STM32_PIN(7, A,11),	
+	__STM32_PIN(8, A, 8),
+	__STM32_PIN(9, B,13),
+	__STM32_PIN(10,B,12),
+	__STM32_PIN(11,C, 9),
+	
+	__STM32_PIN(12,A, 7),	
+	__STM32_PIN(13,C, 5),
+	__STM32_PIN(14,B, 0),
+   
 #endif
 #if (STM32F10X_PIN_NUMBERS == 100)
     __STM32_PIN_DEFAULT,
