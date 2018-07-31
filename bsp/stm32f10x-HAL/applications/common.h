@@ -1,6 +1,8 @@
 #ifndef COMMON_H__
 #define COMMON_H__
 #include "rtconfig.h"
+#include "rtthread.h"
+
 
 //GPIO enum
 typedef enum pinName
@@ -35,7 +37,8 @@ typedef enum pinName
 #define RT_THREAD_PRIORITY_LED		RT_THREAD_PRIORITY_MAX			//LED	
 #define RT_THREAD_PRIORITY_MOTOR	RT_THREAD_PRIORITY_MAX - 1		//motor	
 
-
+/* ÐÅºÅÁ¿¿ØÖÆ¿é */
+static struct rt_semaphore timer_sem;
 
 
 #endif

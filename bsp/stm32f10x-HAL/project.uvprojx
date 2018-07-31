@@ -384,6 +384,13 @@
           </Files>
           <Files>
             <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\led.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
@@ -394,6 +401,13 @@
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\motor.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -932,7 +946,7 @@
           </Files>
           <Files>
             <File>
-              <FileName>timer.c</FileName>
+              <FileName>src_timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\src\timer.c</FilePath>
             </File>

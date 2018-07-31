@@ -8,6 +8,7 @@
 #include "finsh.h"
 #include "motor.h"
 #include "common.h"
+#include "timer.h"
 
 //电机1
 #define M1_EN_H		rt_pin_write(eM1_en,1)		//电机1 使能高
@@ -108,26 +109,48 @@ void rt_hw_motor_init(void)
 	rt_pin_mode(eB2_N,  PIN_MODE_OUTPUT);	
 }
 
-
+#define MOTOR_SETP1 1
+#define MOTOR_SETP2 2
+#define MOTOR_SETP3 3
+#define MOTOR_SETP4 4
 static void motor_thread_entry(void *parameter)
 {
     unsigned int count = 0;
-
+	rt_err_t result;
+	rt_uint8_t step = 1;
     rt_hw_motor_init();
+	
 
     while (1)
     {
-        /* led1 on */
-        rt_kprintf("led on, count : %d\r\n", count);
-        count++;
-//        rt_pin_write(LED_PIN, 0);
-        rt_thread_delay(RT_TICK_PER_SECOND / 2); /* sleep 0.5 second and switch to other thread */
-
-        /* led1 off */
-        rt_kprintf("led off\r\n");
-
-//        rt_pin_write(LED_PIN, 1);
-        rt_thread_delay(RT_TICK_PER_SECOND / 2);
+		//永久等待信号量，获取信号量，则信号量的数量减1
+		result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
+		if(result == RT_EOK )
+		{
+			switch(step)
+			{
+				case MOTOR_SETP1:
+					MOTOR1_STEP1;
+					step++;
+				break;
+				
+				case MOTOR_SETP2:
+					MOTOR1_STEP2;
+					step++;
+				break;
+				
+				case MOTOR_SETP3:
+					MOTOR1_STEP3;
+					step++;
+				break;
+				
+				case MOTOR_SETP4:
+					MOTOR1_STEP4;
+					if(step >= 4)
+					step = 1;
+				break;				
+			}
+		}
     }
 }
 
