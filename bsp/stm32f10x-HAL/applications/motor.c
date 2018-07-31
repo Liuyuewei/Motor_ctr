@@ -119,7 +119,7 @@ static void motor_thread_entry(void *parameter)
 	rt_err_t result;
 	rt_uint8_t step = 1;
     rt_hw_motor_init();
-	
+	TIM3_Init(8999,499);	//用来设置定时器频率
 
     while (1)
     {

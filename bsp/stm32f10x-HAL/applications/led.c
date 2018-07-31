@@ -10,6 +10,7 @@
 #include <rtdevice.h>
 #include "finsh.h"
 #include "common.h"
+#include "led.h"
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t led_stack[ 512 ];
