@@ -34,11 +34,33 @@
 
 //两相，四拍：(+A)(+B)--(-A)(+B)--(-A)(-B)--(+A)(-B)-- 
 //单相，四拍：(+A)--(+B)--(-A)--(-B)-- 
-//电机1
+
+#if 1
+//两相四排
+//电机1	
 #define MOTOR1_STEP1	A1_P_H;	A1_N_L;  B1_P_H; B1_N_L
 #define MOTOR1_STEP2	A1_P_L;	A1_N_H;  B1_P_H; B1_N_L
 #define MOTOR1_STEP3	A1_P_L;	A1_N_H;  B1_P_L; B1_N_H
 #define MOTOR1_STEP4	A1_P_H;	A1_N_L;  B1_P_L; B1_N_H
+//电机2
+#define MOTOR2_STEP1	A2_P_H;	A2_N_L;  B2_P_H; B2_N_L
+#define MOTOR2_STEP2	A2_P_L;	A2_N_H;  B2_P_H; B2_N_L
+#define MOTOR2_STEP3	A2_P_L;	A2_N_H;  B2_P_L; B2_N_H
+#define MOTOR2_STEP4	A2_P_H;	A2_N_L;  B2_P_L; B2_N_H
+
+#else	
+//单相四排
+//电机1	
+#define MOTOR1_STEP1_S	A1_P_H;	A1_N_L 
+#define MOTOR1_STEP2_S	B1_P_H; B1_N_L
+#define MOTOR1_STEP3_S	A1_P_L;	A1_N_H
+#define MOTOR1_STEP4_S	B1_P_L; B1_N_H
+//电机2
+#define MOTOR2_STEP1_S	A2_P_H;	A2_N_L
+#define MOTOR2_STEP2_S	B2_P_H; B2_N_L 
+#define MOTOR2_STEP3_S	A2_P_L;	A2_N_H
+#define MOTOR2_STEP4_S	B2_P_L; B2_N_H
+#endif
 
 
 ALIGN(RT_ALIGN_SIZE)
@@ -69,6 +91,8 @@ static struct rt_thread motor_thread;
 //	eKEY_F,								//电机正转		PA7
 //	eKEY_R,								//电机反转		PC5
 //	eKEY_S,								//电机停止		PB0
+
+//电机控制引脚模式配置
 void rt_hw_motor_init(void)
 {
 	rt_pin_mode(eM1_en, PIN_MODE_OUTPUT);
@@ -83,6 +107,7 @@ void rt_hw_motor_init(void)
 	rt_pin_mode(eB2_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB2_N,  PIN_MODE_OUTPUT);	
 }
+
 
 static void motor_thread_entry(void *parameter)
 {
