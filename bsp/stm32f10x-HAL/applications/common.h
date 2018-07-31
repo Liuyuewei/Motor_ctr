@@ -34,8 +34,8 @@ typedef enum pinName
 
 //线程优先级	RT_THREAD_PRIORITY_MAX	32
 
-#define RT_THREAD_PRIORITY_LED		RT_THREAD_PRIORITY_MAX			//LED	
-#define RT_THREAD_PRIORITY_MOTOR	RT_THREAD_PRIORITY_MAX - 1		//motor	
+#define RT_THREAD_PRIORITY_LED		10			//LED	
+#define RT_THREAD_PRIORITY_MOTOR	11		//motor	
 
 /* 信号量控制块 */
 static struct rt_semaphore timer_sem;

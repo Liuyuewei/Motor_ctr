@@ -119,33 +119,39 @@ static void motor_thread_entry(void *parameter)
 	rt_err_t result;
 	rt_uint8_t step = 1;
     rt_hw_motor_init();
-	TIM3_Init(8999,499);	//用来设置定时器频率
+	TIM3_Init(5000-1,9000-1);	//用来设置定时器频率
 
     while (1)
     {
+		rt_kprintf("motor running !\r\n");
 		//永久等待信号量，获取信号量，则信号量的数量减1
-		result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
+		result = rt_sem_take(&timer_sem,100);
+		
 		if(result == RT_EOK )
 		{
 			switch(step)
 			{
 				case MOTOR_SETP1:
 					MOTOR1_STEP1;
+					rt_kprintf("step1\r\n");
 					step++;
 				break;
 				
 				case MOTOR_SETP2:
 					MOTOR1_STEP2;
+					rt_kprintf("step2\r\n");
 					step++;
 				break;
 				
 				case MOTOR_SETP3:
 					MOTOR1_STEP3;
+					rt_kprintf("step3\r\n");
 					step++;
 				break;
 				
 				case MOTOR_SETP4:
 					MOTOR1_STEP4;
+					rt_kprintf("step4\r\n");
 					if(step >= 4)
 					step = 1;
 				break;				

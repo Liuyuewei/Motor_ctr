@@ -5,6 +5,13 @@
 #include "timer.h"
 #include "common.h"
 
+int timer_semaphore_init()
+{
+	rt_err_t result;	
+	result = rt_sem_init(&timer_sem,"ssem",0,RT_IPC_FLAG_FIFO);
+	if(result != RT_EOK)
+	rt_kprintf("Timer sem init failed!\r\n");
+}
 TIM_HandleTypeDef TIM3_Handler; 									//定时器句柄
 
 //通用定时器 3 中断初始化
@@ -15,6 +22,7 @@ TIM_HandleTypeDef TIM3_Handler; 									//定时器句柄
 
 void TIM3_Init(rt_uint16_t arr,rt_uint16_t psc)
 {
+	timer_semaphore_init();											//初始化信号量
 	TIM3_Handler.Instance			=	TIM3; 						//通用定时器 3
 	TIM3_Handler.Init.Prescaler		=	psc;						//分频系数
 	TIM3_Handler.Init.CounterMode	=	TIM_COUNTERMODE_UP; 		//向上计数器
@@ -40,21 +48,18 @@ void TIM3_IRQHandler(void)
 	HAL_TIM_IRQHandler(&TIM3_Handler);
 }
 
-int timer_semaphore_init()
-{
-	rt_err_t result;	
-	result = rt_sem_init(&timer_sem,"ssem",0,RT_IPC_FLAG_FIFO);
-	if(result != RT_EOK)
-	rt_kprintf("Timer sem init failed!\r\n");
-}
+
 
 //定时器 3 中断服务函数调用
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==(&TIM3_Handler))
 	{
+		rt_enter_critical();
 		//定时器到时则释放一次信号量
 		rt_sem_release(&timer_sem);
+		rt_exit_critical();
+		rt_kprintf("sem number = %d\r\n",timer_sem.value);
 	}
 }
 
