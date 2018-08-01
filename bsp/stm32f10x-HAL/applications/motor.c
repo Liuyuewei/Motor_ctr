@@ -8,7 +8,7 @@
 #include "finsh.h"
 #include "motor.h"
 #include "common.h"
-#include "timer.h"
+#include "timer3.h"
 #include "log.h"
 
 #define MOTOR_DEG	1
@@ -307,6 +307,7 @@ static void motor_thread_entry(void *parameter)
 	//启动之后电机自动往反运动
     while (1)
     {
+		key_scan();
 		if(key_f == 0)
 		{
 			key_r = 1;

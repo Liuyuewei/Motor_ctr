@@ -2,7 +2,7 @@
  * 程序清单：定时器
  * 程序描述：通过定时器来控制gpio的输出，从而控制步进电机
  */
-#include "timer.h"
+#include "timer3.h"
 #include "common.h"
 
 struct rt_semaphore timer_sem;

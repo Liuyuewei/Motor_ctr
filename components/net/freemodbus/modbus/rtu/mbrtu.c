@@ -43,6 +43,15 @@
 #include "mbcrc.h"
 #include "mbport.h"
 
+/**********************************************/
+//需要将该部分加上，否则找不到定义	lyw 20180801
+#ifdef  USE_FULL_ASSERT
+#include "stm32_assert.h"
+#else
+#define assert_param(expr) ((void)0U)
+#endif
+/**********************************************/
+
 /* ----------------------- Defines ------------------------------------------*/
 #define MB_SER_PDU_SIZE_MIN     4       /*!< Minimum size of a Modbus RTU frame. */
 #define MB_SER_PDU_SIZE_MAX     256     /*!< Maximum size of a Modbus RTU frame. */

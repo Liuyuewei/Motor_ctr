@@ -39,6 +39,15 @@
 #include "mb.h"
 #include "mbproto.h"
 
+/**********************************************/
+//需要将该部分加上，否则找不到定义	lyw 20180801
+#ifdef  USE_FULL_ASSERT
+#include "stm32_assert.h"
+#else
+#define assert_param(expr) ((void)0U)
+#endif
+/**********************************************/
+
 /* ----------------------- Defines ------------------------------------------*/
 #define BITS_UCHAR      8U
 
