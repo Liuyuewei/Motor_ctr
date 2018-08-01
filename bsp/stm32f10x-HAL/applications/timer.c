@@ -5,10 +5,12 @@
 #include "timer.h"
 #include "common.h"
 
+struct rt_semaphore timer_sem;
+
 int timer_semaphore_init()
 {
 	rt_err_t result;	
-	result = rt_sem_init(&timer_sem,"ssem",0,RT_IPC_FLAG_FIFO);
+	result = rt_sem_init(&timer_sem,"ssem",0,RT_IPC_FLAG_PRIO);
 	if(result != RT_EOK)
 	rt_kprintf("Timer sem init failed!\r\n");
 }
@@ -55,10 +57,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==(&TIM3_Handler))
 	{
-		rt_enter_critical();
+//		rt_enter_critical();
 		//定时器到时则释放一次信号量
 		rt_sem_release(&timer_sem);
-		rt_exit_critical();
+//		rt_exit_critical();
 		rt_kprintf("sem number = %d\r\n",timer_sem.value);
 	}
 }

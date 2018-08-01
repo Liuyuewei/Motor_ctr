@@ -123,9 +123,8 @@ static void motor_thread_entry(void *parameter)
 
     while (1)
     {
-		rt_kprintf("motor running !\r\n");
 		//永久等待信号量，获取信号量，则信号量的数量减1
-		result = rt_sem_take(&timer_sem,100);
+		result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
 		
 		if(result == RT_EOK )
 		{

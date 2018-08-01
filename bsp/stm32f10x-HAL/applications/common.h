@@ -38,7 +38,7 @@ typedef enum pinName
 #define RT_THREAD_PRIORITY_MOTOR	11		//motor	
 
 /* ÐÅºÅÁ¿¿ØÖÆ¿é */
-static struct rt_semaphore timer_sem;
+extern struct rt_semaphore timer_sem;
 
 
 #endif
