@@ -14,10 +14,12 @@
 #include <rtthread.h>
 #include "led.h"
 #include "motor.h"
+#include "modbus_app.h"
 int main(void)
 {
 	/* user app entry */
-//	led_run_init();		//开启运行指示灯线程
-	motor_ctr_init();	//开启电机控制线程
+	led_run_init();			//开启运行指示灯线程
+	motor_ctr_init();		//开启电机控制线程
+	modbus_thread_init();	//开启modbus线程
 	return 0;
 }
