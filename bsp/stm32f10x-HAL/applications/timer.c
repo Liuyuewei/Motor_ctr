@@ -15,7 +15,16 @@ int timer_semaphore_init()
 	rt_kprintf("Timer sem init failed!\r\n");
 }
 TIM_HandleTypeDef TIM3_Handler; 									//定时器句柄
-
+//启动定时器
+void TIM3_Start(void)
+{
+	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
+}
+//停止定时器
+void TIM3_Stop(void)
+{
+	HAL_TIM_Base_Stop_IT(&TIM3_Handler);
+}
 //通用定时器 3 中断初始化
 //arr：自动重装值。 psc：时钟预分频数
 //定时器溢出时间计算方法:Tout=((arr+1)*(psc+1))/Ft us.
@@ -32,7 +41,7 @@ void TIM3_Init(rt_uint16_t arr,rt_uint16_t psc)
 	TIM3_Handler.Init.ClockDivision	=	TIM_CLOCKDIVISION_DIV1; 	//时钟分频因子
 	
 	HAL_TIM_Base_Init(&TIM3_Handler); 								//初始化定时器 3
-	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
+//	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
 }
 
 //定时器底层驱动，开启时钟，设置中断优先级
@@ -64,4 +73,5 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		rt_kprintf("sem number = %d\r\n",timer_sem.value);
 	}
 }
-
+#include "finsh.h"
+MSH_CMD_EXPORT(TIM3_Stop, stop tim3);

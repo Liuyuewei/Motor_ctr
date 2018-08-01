@@ -66,6 +66,33 @@
 #define MOTOR2_STEP4_S	B2_P_L; B2_N_H
 #endif
 
+/********************按键输入读取**********************/
+#define	KEY_F	rt_pin_read(eKEY_F)		//正转
+#define	KEY_R	rt_pin_read(eKEY_R)		//反转
+#define	KEY_S	rt_pin_read(eKEY_S)		//停止
+
+
+/********************限位输入读取**********************/
+//正常情况为低电平，到达该位置时为高，指示灯亮
+#define	CHANNEL1_F	rt_pin_read(eChannel1_F)
+#define	CHANNEL1_B	rt_pin_read(eChannel1_B)
+
+#define	CHANNEL2_F	rt_pin_read(eChannel2_F)
+#define	CHANNEL2_B	rt_pin_read(eChannel2_B)
+
+#define	CHANNEL3_F	rt_pin_read(eChannel3_F)
+#define	CHANNEL3_B	rt_pin_read(eChannel3_B)
+
+#define	CHANNEL4_F	rt_pin_read(eChannel4_F)
+#define	CHANNEL4_B	rt_pin_read(eChannel4_B)
+
+//定义按键初始值
+rt_uint8_t key_f = 1;	//正转
+rt_uint8_t key_r = 1;	//反转
+rt_uint8_t key_s = 1;	//停止
+
+rt_uint8_t step_f = 1;
+rt_uint8_t step_r = 4;
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t motor_stack[ 512 ];
@@ -105,24 +132,42 @@ void rt_hw_motor_init(void)
 	rt_pin_mode(eA1_N,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB1_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB1_N,  PIN_MODE_OUTPUT);
+	//使能脚：高使能 初始化
+	rt_pin_write(eM1_en,PIN_LOW);	
+	rt_pin_write(eA1_P,PIN_LOW);
+	rt_pin_write(eA1_N,PIN_LOW);	
+	rt_pin_write(eB1_P,PIN_LOW);
+	rt_pin_write(eB1_N,PIN_LOW);	
 	//电机2
 	rt_pin_mode(eM2_en, PIN_MODE_OUTPUT);
 	rt_pin_mode(eA2_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eA2_N,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB2_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB2_N,  PIN_MODE_OUTPUT);	
+	//使能脚：高使能		初始化
+	rt_pin_write(eM2_en,PIN_LOW);	
+	rt_pin_write(eA2_P,PIN_LOW);
+	rt_pin_write(eA2_N,PIN_LOW);	
+	rt_pin_write(eB2_P,PIN_LOW);
+	rt_pin_write(eB2_N,PIN_LOW);	
+	
+	//三个按键
+	rt_pin_mode(eKEY_F,PIN_MODE_INPUT_PULLUP);
+	rt_pin_mode(eKEY_R,PIN_MODE_INPUT_PULLUP);	
+	rt_pin_mode(eKEY_S,PIN_MODE_INPUT_PULLUP);
+	
 	//四个通道限位	正常情况为低电平，到达该位置时为高，指示灯亮
-	rt_pin_mode(eChannel1_F,PIN_MODE_INPUT);
-	rt_pin_mode(eChannel1_B,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel1_F,PIN_MODE_INPUT_PULLDOWN);
+	rt_pin_mode(eChannel1_B,PIN_MODE_INPUT_PULLDOWN);
 	
-	rt_pin_mode(eChannel2_F,PIN_MODE_INPUT);
-	rt_pin_mode(eChannel2_B,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel2_F,PIN_MODE_INPUT_PULLDOWN);
+	rt_pin_mode(eChannel2_B,PIN_MODE_INPUT_PULLDOWN);
 	
-	rt_pin_mode(eChannel3_F,PIN_MODE_INPUT);
-	rt_pin_mode(eChannel3_B,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel3_F,PIN_MODE_INPUT_PULLDOWN);
+	rt_pin_mode(eChannel3_B,PIN_MODE_INPUT_PULLDOWN);
 	
-	rt_pin_mode(eChannel4_F,PIN_MODE_INPUT);
-	rt_pin_mode(eChannel4_B,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel4_F,PIN_MODE_INPUT_PULLDOWN);
+	rt_pin_mode(eChannel4_B,PIN_MODE_INPUT_PULLDOWN);
 	
 }
 
@@ -130,6 +175,128 @@ void rt_hw_motor_init(void)
 #define MOTOR_SETP2 2
 #define MOTOR_SETP3 3
 #define MOTOR_SETP4 4
+
+//按键扫描
+static void key_scan(void)
+{
+	//按键：低电平按下，高电平释放
+	if(rt_pin_read(eKEY_F) == 0)
+	{
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		key_f = 0;
+	}
+		
+	if(rt_pin_read(eKEY_R) == 0)
+	{
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		key_r = 0;
+	}
+	
+	if(rt_pin_read(eKEY_S) == 0)
+	{
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		key_s = 0;
+	}
+}
+//电机正转
+static void motor_run_forward()
+{
+	rt_err_t result;	
+	TIM3_Start();
+	rt_pin_write(eM1_en,PIN_HIGH);
+	
+	//永久等待信号量，获取信号量，则信号量的数量减1
+	result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
+	
+	if(result == RT_EOK )
+	{
+		switch(step_f)
+		{
+			case MOTOR_SETP1:
+				MOTOR1_STEP1;
+				LOG(MOTOR_DEG,"step1\r\n");
+				step_f++;
+			break;
+			
+			case MOTOR_SETP2:
+				MOTOR1_STEP2;
+				LOG(MOTOR_DEG,"step2\r\n");
+				step_f++;
+			break;
+			
+			case MOTOR_SETP3:
+				MOTOR1_STEP3;
+				LOG(MOTOR_DEG,"step3\r\n");
+				step_f++;
+			break;
+			
+			case MOTOR_SETP4:
+				MOTOR1_STEP4;
+				LOG(MOTOR_DEG,"step4\r\n");
+				if(step_f >= 4)
+				step_f = 1;
+			break;				
+		}
+	}
+}
+//电机反转
+static void motor_run_reversal()
+{
+	rt_err_t result;
+	TIM3_Start();
+	rt_pin_write(eM1_en,PIN_HIGH);
+	
+	//永久等待信号量，获取信号量，则信号量的数量减1
+	result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
+	
+	if(result == RT_EOK )
+	{
+		switch(step_r)
+		{
+			case MOTOR_SETP1:
+				MOTOR1_STEP1;
+				LOG(MOTOR_DEG,"step1\r\n");
+				if(step_r <= 1)
+				step_r = 4;
+			break;
+			
+			case MOTOR_SETP2:
+				MOTOR1_STEP2;
+				LOG(MOTOR_DEG,"step2\r\n");
+				step_r--;
+			break;
+			
+			case MOTOR_SETP3:
+				MOTOR1_STEP3;
+				LOG(MOTOR_DEG,"step3\r\n");
+				step_r--;
+			break;
+			
+			case MOTOR_SETP4:
+				MOTOR1_STEP4;
+				LOG(MOTOR_DEG,"step4\r\n");
+				step_r--;
+			break;				
+		}
+	}
+}
+//电机停止
+static void motor_run_stop()
+{
+	TIM3_Stop();
+	//使能脚：高使能 初始化
+	rt_pin_write(eM1_en,PIN_LOW);	
+	rt_pin_write(eA1_P,PIN_LOW);
+	rt_pin_write(eA1_N,PIN_LOW);	
+	rt_pin_write(eB1_P,PIN_LOW);
+	rt_pin_write(eB1_N,PIN_LOW);	
+	//使能脚：高使能		初始化
+	rt_pin_write(eM2_en,PIN_LOW);	
+	rt_pin_write(eA2_P,PIN_LOW);
+	rt_pin_write(eA2_N,PIN_LOW);	
+	rt_pin_write(eB2_P,PIN_LOW);
+	rt_pin_write(eB2_N,PIN_LOW);
+}
 static void motor_thread_entry(void *parameter)
 {
     unsigned int count = 0;
@@ -137,42 +304,47 @@ static void motor_thread_entry(void *parameter)
 	rt_uint8_t step = 1;
     rt_hw_motor_init();
 	TIM3_Init(5000-1,9000-1);	//用来设置定时器频率
-
+	//启动之后电机自动往反运动
     while (1)
     {
-		//永久等待信号量，获取信号量，则信号量的数量减1
-		result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
-		
-		if(result == RT_EOK )
+		if(key_f == 0)
 		{
-			switch(step)
+			key_r = 1;
+			key_s = 1;
+			motor_run_forward();	
+			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
 			{
-				case MOTOR_SETP1:
-					MOTOR1_STEP1;
-					LOG(MOTOR_DEG,"step1\r\n");
-					step++;
-				break;
-				
-				case MOTOR_SETP2:
-					MOTOR1_STEP2;
-					LOG(MOTOR_DEG,"step2\r\n");
-					step++;
-				break;
-				
-				case MOTOR_SETP3:
-					MOTOR1_STEP3;
-					LOG(MOTOR_DEG,"step3\r\n");
-					step++;
-				break;
-				
-				case MOTOR_SETP4:
-					MOTOR1_STEP4;
-					LOG(MOTOR_DEG,"step4\r\n");
-					if(step >= 4)
-					step = 1;
-				break;				
+				TIM3_Stop();
+				key_f = 1;
+				key_r = 0;
+				key_s = 1;
 			}
+				
 		}
+		else if(key_r == 0)
+		{	
+			key_f = 1;
+			key_s = 1;
+			motor_run_reversal();	
+			if(CHANNEL1_B == 1 || CHANNEL2_B == 1 || CHANNEL3_B == 1 || CHANNEL4_B == 1)
+			{
+				TIM3_Stop();
+				key_f = 0;
+				key_r = 1;
+				key_s = 1;
+			}				
+		}
+		else if(key_s == 0)
+		{
+			key_r = 1;
+			key_f = 1;
+			motor_run_stop();	
+		}	
+		else
+		{
+			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//500ms	
+			LOG(MOTOR_DEG,"motor idle !\r\n");
+		}	
     }
 }
 
@@ -203,4 +375,5 @@ int motor_ctr_init(void)
 
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(motor_ctr_init, motor contrl);
+
 

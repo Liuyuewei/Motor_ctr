@@ -147,6 +147,7 @@ int rtthread_startup(void);
 extern int $Super$$main(void);
 /* re-define main function */
 int $Sub$$main(void)
+
 {
     rt_hw_interrupt_disable();
     rtthread_startup();
