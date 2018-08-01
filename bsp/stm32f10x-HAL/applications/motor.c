@@ -9,7 +9,10 @@
 #include "motor.h"
 #include "common.h"
 #include "timer.h"
+#include "log.h"
 
+#define MOTOR_DEG	1
+#define MOTOR_RES	0
 //电机1
 #define M1_EN_H		rt_pin_write(eM1_en,1)		//电机1 使能高
 #define M1_EN_L		rt_pin_write(eM1_en,0)		//电机1 使能低
@@ -132,25 +135,25 @@ static void motor_thread_entry(void *parameter)
 			{
 				case MOTOR_SETP1:
 					MOTOR1_STEP1;
-					rt_kprintf("step1\r\n");
+					LOG(MOTOR_DEG,"step1\r\n");
 					step++;
 				break;
 				
 				case MOTOR_SETP2:
 					MOTOR1_STEP2;
-					rt_kprintf("step2\r\n");
+					LOG(MOTOR_DEG,"step2\r\n");
 					step++;
 				break;
 				
 				case MOTOR_SETP3:
 					MOTOR1_STEP3;
-					rt_kprintf("step3\r\n");
+					LOG(MOTOR_DEG,"step3\r\n");
 					step++;
 				break;
 				
 				case MOTOR_SETP4:
 					MOTOR1_STEP4;
-					rt_kprintf("step4\r\n");
+					LOG(MOTOR_DEG,"step4\r\n");
 					if(step >= 4)
 					step = 1;
 				break;				
