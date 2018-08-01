@@ -99,17 +99,31 @@ static struct rt_thread motor_thread;
 //电机控制引脚模式配置
 void rt_hw_motor_init(void)
 {
+	//电机1
 	rt_pin_mode(eM1_en, PIN_MODE_OUTPUT);
 	rt_pin_mode(eA1_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eA1_N,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB1_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB1_N,  PIN_MODE_OUTPUT);
-	
+	//电机2
 	rt_pin_mode(eM2_en, PIN_MODE_OUTPUT);
 	rt_pin_mode(eA2_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eA2_N,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB2_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB2_N,  PIN_MODE_OUTPUT);	
+	//四个通道限位	正常情况为低电平，到达该位置时为高，指示灯亮
+	rt_pin_mode(eChannel1_F,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel1_B,PIN_MODE_INPUT);
+	
+	rt_pin_mode(eChannel2_F,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel2_B,PIN_MODE_INPUT);
+	
+	rt_pin_mode(eChannel3_F,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel3_B,PIN_MODE_INPUT);
+	
+	rt_pin_mode(eChannel4_F,PIN_MODE_INPUT);
+	rt_pin_mode(eChannel4_B,PIN_MODE_INPUT);
+	
 }
 
 #define MOTOR_SETP1 1

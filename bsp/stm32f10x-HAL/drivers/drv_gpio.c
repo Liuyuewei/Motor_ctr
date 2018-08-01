@@ -113,7 +113,18 @@ struct pin_index
 //	eKEY_F,								//电机正转		PA7
 //	eKEY_R,								//电机反转		PC5
 //	eKEY_S,								//电机停止		PB0
-
+//	/********限位GPIO********/
+//	eChannel1_F,						//通道1前限位	PB9
+//	eChannel1_B,						//通道1后限位	PC0
+//	
+//	eChannel2_F,						//通道2前限位	PB5
+//	eChannel2_B,						//通道2后限位	PB6
+//	
+//	eChannel3_F,						//通道3前限位	PC12
+//	eChannel3_B,						//通道3后限位	PD2
+//	
+//	eChannel4_F,						//通道4前限位	PA12
+//	eChannel4_B,						//通道4后限位	PA15
 
 
 static const struct pin_index pins[] =
@@ -212,23 +223,35 @@ static const struct pin_index pins[] =
 #if (STM32F10X_PIN_NUMBERS == 64)
     __STM32_PIN(0, A, 2),
 	__STM32_PIN(1, B, 1),
-	
+	//电机1
 	__STM32_PIN(2, C, 8),	
 	__STM32_PIN(3, C, 7),
 	__STM32_PIN(4, B,15),
 	__STM32_PIN(5, B,14),
 	__STM32_PIN(6, C, 6),
-	
+	//电机2
 	__STM32_PIN(7, A,11),	
 	__STM32_PIN(8, A, 8),
 	__STM32_PIN(9, B,13),
 	__STM32_PIN(10,B,12),
 	__STM32_PIN(11,C, 9),
-	
+	//三个按键
 	__STM32_PIN(12,A, 7),	
 	__STM32_PIN(13,C, 5),
 	__STM32_PIN(14,B, 0),
-   
+	//通道1限位
+	__STM32_PIN(15,B, 9),
+	__STM32_PIN(16,C, 0),
+	//通道2限位
+	__STM32_PIN(17,B, 5),
+	__STM32_PIN(18,B, 6),
+	//通道3限位
+	__STM32_PIN(19,C,12),
+	__STM32_PIN(20,D, 2),
+	//通道4限位
+	__STM32_PIN(21,A,12),
+	__STM32_PIN(22,A,15),
+	
 #endif
 #if (STM32F10X_PIN_NUMBERS == 100)
     __STM32_PIN_DEFAULT,
