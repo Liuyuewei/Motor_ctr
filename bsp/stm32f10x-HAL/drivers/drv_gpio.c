@@ -126,6 +126,19 @@ struct pin_index
 //	eChannel4_F,						//通道4前限位	PA12
 //	eChannel4_B,						//通道4后限位	PA15
 
+//	/********温度传感器GPIO********/
+//	eTem1_SCL,							//通道1温度传感器SCL		PC1
+//	eTem1_SDA,							//通道1温度传感器SDA		PC2
+//	
+//	eTem2_SCL,							//通道2温度传感器SCL		PB7
+//	eTem2_SDA,							//通道2温度传感器SDA		PB8	
+//	
+//	eTem3_SCL,							//通道3温度传感器SCL		PB3
+//	eTem3_SDA,							//通道3温度传感器SDA		PB4
+//	
+//	eTem4_SCL,							//通道4温度传感器SCL		PC10
+//	eTem4_SDA,							//通道4温度传感器SDA		PC11
+
 
 static const struct pin_index pins[] =
 {
@@ -251,6 +264,20 @@ static const struct pin_index pins[] =
 	//通道4限位
 	__STM32_PIN(21,A,12),
 	__STM32_PIN(22,A,15),
+	
+	//温度传感器1
+	__STM32_PIN(22,C, 1),
+	__STM32_PIN(23,C, 2),
+	//温度传感器2
+	__STM32_PIN(24,B, 7),
+	__STM32_PIN(25,B, 8),
+	//温度传感器3
+	__STM32_PIN(26,B, 3),
+	__STM32_PIN(27,B, 4),
+	//温度传感器4
+	__STM32_PIN(28,C,10),
+	__STM32_PIN(28,C,11),
+	
 	
 #endif
 #if (STM32F10X_PIN_NUMBERS == 100)

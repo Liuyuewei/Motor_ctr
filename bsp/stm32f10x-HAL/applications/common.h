@@ -42,7 +42,19 @@ typedef enum pinName
 	eChannel4_F,						//通道4前限位	PA12
 	eChannel4_B,						//通道4后限位	PA15
 	
+	/********温度传感器GPIO********/
+	eTem1_SCL,							//通道1温度传感器SCL		PC1
+	eTem1_SDA,							//通道1温度传感器SDA		PC2
 	
+	eTem2_SCL,							//通道2温度传感器SCL		PB7
+	eTem2_SDA,							//通道2温度传感器SDA		PB8	
+	
+	eTem3_SCL,							//通道3温度传感器SCL		PB3
+	eTem3_SDA,							//通道3温度传感器SDA		PB4
+	
+	eTem4_SCL,							//通道4温度传感器SCL		PC10
+	eTem4_SDA,							//通道4温度传感器SDA		PC11
+			
 }pinName_t;
 
 

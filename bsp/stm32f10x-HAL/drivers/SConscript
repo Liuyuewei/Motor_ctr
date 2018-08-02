@@ -8,6 +8,10 @@ cwd = GetCurrentDir()
 src = Split("""
 board.c
 stm32f1xx_it.c
+drv_iic1.c
+drv_iic2.c
+drv_iic3.c
+drv_iic4.c
 """)
 
 if GetDepend(['RT_USING_PIN']):

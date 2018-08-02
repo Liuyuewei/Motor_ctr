@@ -425,6 +425,26 @@
               <FilePath>drivers\stm32f1xx_it.c</FilePath>
             </File>
             <File>
+              <FileName>drv_iic1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_iic1.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_iic2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_iic2.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_iic3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_iic3.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_iic4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_iic4.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_gpio.c</FilePath>
