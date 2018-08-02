@@ -2,7 +2,7 @@
 #define COMMON_H__
 #include "rtconfig.h"
 #include "rtthread.h"
-
+#include "mb.h"
 
 //GPIO enum
 typedef enum pinName
@@ -50,10 +50,14 @@ typedef enum pinName
 
 #define RT_THREAD_PRIORITY_LED		10			//LED	
 #define RT_THREAD_PRIORITY_MOTOR	11			//motor	
-#define RT_THREAD_PRIORITY_MODBUS	12			//modbus	
+#define RT_THREAD_PRIORITY_MODBUS	9			//modbus	
 
 /* 信号量控制块 */
 extern struct rt_semaphore timer_sem;
+
+/******对modbus应用API进行封装******/
+void hold_regist_write(UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode);
+
 
 
 #endif

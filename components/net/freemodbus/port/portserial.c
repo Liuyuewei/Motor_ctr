@@ -113,7 +113,7 @@ BOOL xMBPortSerialInit(UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits,
                    RT_NULL,
                    serial_soft_trans_irq_stack,
                    sizeof(serial_soft_trans_irq_stack),
-                   10, 5);
+                   8, 5);
     rt_thread_startup(&thread_serial_soft_trans_irq);
 
     return TRUE;

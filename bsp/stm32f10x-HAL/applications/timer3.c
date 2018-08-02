@@ -4,10 +4,13 @@
  */
 #include "timer3.h"
 #include "common.h"
+#include "log.h"
 
+#define TIM3_DEG	0
+#define TIM3_RES	1
 struct rt_semaphore timer_sem;
 
-int timer_semaphore_init()
+void timer_semaphore_init()
 {
 	rt_err_t result;	
 	result = rt_sem_init(&timer_sem,"ssem",0,RT_IPC_FLAG_PRIO);
@@ -66,11 +69,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==(&TIM3_Handler))
 	{
-//		rt_enter_critical();
+		rt_enter_critical();
 		//定时器到时则释放一次信号量
 		rt_sem_release(&timer_sem);
-//		rt_exit_critical();
-		rt_kprintf("sem number = %d\r\n",timer_sem.value);
+		rt_exit_critical();
+		LOG(TIM3_DEG,("sem number = %d\r\n",timer_sem.value));
 	}
 }
 #include "finsh.h"

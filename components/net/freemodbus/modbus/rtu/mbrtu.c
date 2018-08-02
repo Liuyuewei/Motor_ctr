@@ -78,7 +78,7 @@ typedef enum
 static volatile eMBSndState eSndState;
 static volatile eMBRcvState eRcvState;
 
-volatile UCHAR  ucRTUBuf[MB_SER_PDU_SIZE_MAX];
+volatile UCHAR  ucRTUBuf[MB_SER_PDU_SIZE_MAX];		//串口数据接收缓冲区
 
 static volatile UCHAR *pucSndBufferCur;
 static volatile USHORT usSndBufferCount;

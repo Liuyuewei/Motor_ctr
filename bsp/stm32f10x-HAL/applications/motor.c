@@ -11,7 +11,7 @@
 #include "timer3.h"
 #include "log.h"
 
-#define MOTOR_DEG	1
+#define MOTOR_DEG	0
 #define MOTOR_RES	0
 //电机1
 #define M1_EN_H		rt_pin_write(eM1_en,1)		//电机1 使能高
@@ -214,25 +214,25 @@ static void motor_run_forward()
 		{
 			case MOTOR_SETP1:
 				MOTOR1_STEP1;
-				LOG(MOTOR_DEG,"step1\r\n");
+				LOG(MOTOR_DEG,("step1\r\n"));
 				step_f++;
 			break;
 			
 			case MOTOR_SETP2:
 				MOTOR1_STEP2;
-				LOG(MOTOR_DEG,"step2\r\n");
+				LOG(MOTOR_DEG,("step2\r\n"));
 				step_f++;
 			break;
 			
 			case MOTOR_SETP3:
 				MOTOR1_STEP3;
-				LOG(MOTOR_DEG,"step3\r\n");
+				LOG(MOTOR_DEG,("step3\r\n"));
 				step_f++;
 			break;
 			
 			case MOTOR_SETP4:
 				MOTOR1_STEP4;
-				LOG(MOTOR_DEG,"step4\r\n");
+				LOG(MOTOR_DEG,("step4\r\n"));
 				if(step_f >= 4)
 				step_f = 1;
 			break;				
@@ -255,26 +255,26 @@ static void motor_run_reversal()
 		{
 			case MOTOR_SETP1:
 				MOTOR1_STEP1;
-				LOG(MOTOR_DEG,"step1\r\n");
+				LOG(MOTOR_DEG,("step1\r\n"));
 				if(step_r <= 1)
 				step_r = 4;
 			break;
 			
 			case MOTOR_SETP2:
 				MOTOR1_STEP2;
-				LOG(MOTOR_DEG,"step2\r\n");
+				LOG(MOTOR_DEG,("step2\r\n"));
 				step_r--;
 			break;
 			
 			case MOTOR_SETP3:
 				MOTOR1_STEP3;
-				LOG(MOTOR_DEG,"step3\r\n");
+				LOG(MOTOR_DEG,("step3\r\n"));
 				step_r--;
 			break;
 			
 			case MOTOR_SETP4:
 				MOTOR1_STEP4;
-				LOG(MOTOR_DEG,"step4\r\n");
+				LOG(MOTOR_DEG,("step4\r\n"));
 				step_r--;
 			break;				
 		}
@@ -299,9 +299,6 @@ static void motor_run_stop()
 }
 static void motor_thread_entry(void *parameter)
 {
-    unsigned int count = 0;
-	rt_err_t result;
-	rt_uint8_t step = 1;
     rt_hw_motor_init();
 	TIM3_Init(5000-1,9000-1);	//用来设置定时器频率
 	//启动之后电机自动往反运动
@@ -344,18 +341,18 @@ static void motor_thread_entry(void *parameter)
 		else
 		{
 			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//500ms	
-			LOG(MOTOR_DEG,"motor idle !\r\n");
+			LOG(MOTOR_DEG,("motor idle !\r\n"));
 		}	
     }
 }
 
-int motor_ctr_init(void)
+int thread_init_motor(void)
 {
     rt_err_t result;
 
     /* init led thread */
     result = rt_thread_init(&motor_thread,
-                            "motro",
+                            "motor",
                             motor_thread_entry,
                             RT_NULL,
                             (rt_uint8_t *)&motor_stack[0],
@@ -375,6 +372,6 @@ int motor_ctr_init(void)
 #endif
 
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(motor_ctr_init, motor contrl);
+MSH_CMD_EXPORT(thread_init_motor, motor contrl);
 
 

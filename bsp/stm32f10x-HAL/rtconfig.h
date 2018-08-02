@@ -135,6 +135,7 @@
 #define STM32F103RE
 #define RT_HSE_VALUE 8000000
 #define RT_USING_UART1
+#define RT_USING_UART2
 #define RT_USING_UART3
 
 #endif

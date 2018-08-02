@@ -11,6 +11,10 @@
 #include "finsh.h"
 #include "common.h"
 #include "led.h"
+#include "log.h"
+
+#define LED_DEG	0
+#define LED_RES	0
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t led_stack[ 512 ];
@@ -31,20 +35,19 @@ static void led_thread_entry(void *parameter)
     while (1)
     {
         /* led1 on */
-        rt_kprintf("led on, count : %d\r\n", count);
+		LOG(LED_DEG,("led on, count : %d\r\n", count));
         count++;
         rt_pin_write(eLed_run, 0);
         rt_thread_delay(RT_TICK_PER_SECOND / 2); /* sleep 0.5 second and switch to other thread */
 
         /* led1 off */
-        rt_kprintf("led off\r\n");
-
+		LOG(LED_DEG,("led off\r\n"));
         rt_pin_write(eLed_run, 1);
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }
 }
 
-int led_run_init(void)
+int thread_init_led(void)
 {
     rt_err_t result;
 
@@ -68,5 +71,5 @@ int led_run_init(void)
     INIT_APP_EXPORT(led_run_init);
 #endif
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(led_run_init, led run);
+MSH_CMD_EXPORT(thread_init_led, led run);
 
