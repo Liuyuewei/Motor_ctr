@@ -20,15 +20,6 @@ static void GPIO_Configuration()
 {
 	rt_pin_mode(eTem1_SCL,PIN_MODE_OUTPUT_OD);
 	rt_pin_mode(eTem1_SDA,PIN_MODE_OUTPUT_OD);
-	
-	rt_pin_mode(eTem2_SCL,PIN_MODE_OUTPUT_OD);
-	rt_pin_mode(eTem2_SDA,PIN_MODE_OUTPUT_OD);
-	
-	rt_pin_mode(eTem3_SCL,PIN_MODE_OUTPUT_OD);
-	rt_pin_mode(eTem3_SDA,PIN_MODE_OUTPUT_OD);
-	
-	rt_pin_mode(eTem4_SCL,PIN_MODE_OUTPUT_OD);
-	rt_pin_mode(eTem4_SDA,PIN_MODE_OUTPUT_OD);
 }    
 
 /*
@@ -117,15 +108,15 @@ static const struct rt_i2c_bit_ops stm32_i2c_bit_ops =
 * param: None
 * retval None
 */
-void IIC_init(void)
+void IIC1_init(void)
 {
-    static struct rt_i2c_bus_device stm32_iic;
+    static struct rt_i2c_bus_device stm32_iic1;
     GPIO_Configuration();
     
-    rt_memset((void *)&stm32_iic,0,sizeof(struct rt_i2c_bus_device));
-    stm32_iic.ops = (void *)&stm32_i2c_bit_ops;
-    stm32_iic.priv = (void *)&stm32_i2c_bit_ops;
-    rt_i2c_bit_add_bus(&stm32_iic,"iic");
+    rt_memset((void *)&stm32_iic1,0,sizeof(struct rt_i2c_bus_device));
+    stm32_iic1.ops = (void *)&stm32_i2c_bit_ops;
+    stm32_iic1.priv = (void *)&stm32_i2c_bit_ops;
+    rt_i2c_bit_add_bus(&stm32_iic1,"iic1");
 }
 
 

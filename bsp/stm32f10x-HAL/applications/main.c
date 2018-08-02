@@ -15,11 +15,13 @@
 #include "led.h"
 #include "motor.h"
 #include "modbus_app.h"
+#include "temperature.h"
 int main(void)
 {
 	/* user app entry */
 	thread_init_led();			//开启运行指示灯线程
 	thread_init_motor();		//开启电机控制线程
 	thread_init_modbus();		//开启modbus线程
+	thread_init_temperature();	//开启温度采集线程
 	return 0;
 }

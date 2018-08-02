@@ -405,6 +405,11 @@
               <FilePath>applications\motor.c</FilePath>
             </File>
             <File>
+              <FileName>temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\temperature.c</FilePath>
+            </File>
+            <File>
               <FileName>timer3.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\timer3.c</FilePath>
@@ -443,6 +448,11 @@
               <FileName>drv_iic4.c</FileName>
               <FileType>1</FileType>
               <FilePath>drivers\drv_iic4.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_mlx90614.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>drivers\drv_mlx90614.c</FilePath>
             </File>
             <File>
               <FileName>drv_gpio.c</FileName>
