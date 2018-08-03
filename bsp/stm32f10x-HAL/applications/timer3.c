@@ -6,7 +6,7 @@
 #include "common.h"
 #include "log.h"
 
-#define TIM3_DEG	1
+#define TIM3_DEG	0
 #define TIM3_RES	1
 struct rt_semaphore timer_sem;
 

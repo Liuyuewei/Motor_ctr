@@ -17,8 +17,8 @@
 #include "type_def.h"
 #include "string.h"
 
-#define MLX90614_DEG	1
-#define MLX90614_RES	0
+#define TEM_DEG	1
+#define TEM_RES	0
 
 rt_device_t device[4];
 
@@ -67,7 +67,7 @@ static void find_mlx90614()
 		device[i] = rt_device_find(MLX90614_name[i]);
 		if(device[i] == RT_NULL)
 		{
-			LOG(MLX90614_DEG,("[%s]==>not find!\r\n",MLX90614_name[i]));
+			LOG(TEM_DEG,("[%s]==>not find!\r\n",MLX90614_name[i]));
 			return;
 		}	
 	}
@@ -91,17 +91,21 @@ static void tem_thread_entry(void *parameter)
 	//查找设备
 	find_mlx90614();
 	
+#if TEM_DEG
 	tem[0] = 32.78;
 	tem[1] = 42.56;
 	tem[2] = 58.32;
 	tem[3] = 67.32;
-
+#endif
+	
     while (1)
     {
 		for(u8_t i=0;i<4;i++)
 		{
-//			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
-//			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
+#if	!TEM_DEG
+			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
+			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
+#endif
 			hole_regist_write_float(tem[i],eTem1_h + i * 2);			
 			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//延时500ms
 		}

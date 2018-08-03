@@ -90,9 +90,10 @@
 // Tout = ARR * PSC / 72000000 s
 // Tout:定时器中断周期
 // 72000000:为72MHz 
-// 通过测试 ARR最小为14，即1.4ms 频率为 1000/1.4 接近1k
+// 通过测试 ARR最小为14，即1.4ms 频率为 1000/1.4 接近1k。
+// 如果ARR再小的话，则motor线程无法及时处理定时器释放的信号量
 // ARR 越大 电机频率越低
-#define ARR	14		//自动重装载寄存器周期的值
+#define ARR	30		//自动重装载寄存器周期的值
 #define PSC	7200	//时钟频率除数的预分频值
 
 //定义按键初始值
@@ -102,6 +103,8 @@ static rt_uint8_t key_s = 1;	//停止
 
 rt_uint8_t step_f = 1;
 rt_uint8_t step_r = 4;
+
+rt_uint8_t tim3_flag = 0;
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t motor_stack[ 512 ];
@@ -192,19 +195,25 @@ static void key_scan(void)
 	//按键：低电平按下，高电平释放
 	if(rt_pin_read(eKEY_F) == PIN_LOW)
 	{
-		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+//		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_f = 0;
+		key_r = 1;
+		key_s = 1;
 	}
 		
 	else if(rt_pin_read(eKEY_R) == PIN_LOW)
 	{
-		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+//		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		key_f = 1;
 		key_r = 0;
+		key_s = 1;
 	}
 	
 	else if(rt_pin_read(eKEY_S) == PIN_LOW)
 	{
-		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+//		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		key_f = 1;
+		key_r = 1;
 		key_s = 0;
 	}
 }
@@ -212,7 +221,12 @@ static void key_scan(void)
 static void motor_run_forward()
 {
 	rt_err_t result;	
-	TIM3_Start();
+	if(tim3_flag == 0)
+	{
+		TIM3_Start();
+		tim3_flag = 1;
+	}
+	
 	rt_pin_write(eM1_en,PIN_HIGH);
 	
 	//永久等待信号量，获取信号量，则信号量的数量减1
@@ -253,7 +267,11 @@ static void motor_run_forward()
 static void motor_run_reversal()
 {
 	rt_err_t result;
-	TIM3_Start();
+	if(tim3_flag == 0)
+	{
+		TIM3_Start();
+		tim3_flag = 1;
+	}
 	rt_pin_write(eM1_en,PIN_HIGH);
 	
 	//永久等待信号量，获取信号量，则信号量的数量减1
@@ -293,7 +311,9 @@ static void motor_run_reversal()
 //电机停止
 static void motor_run_stop()
 {
+	
 	TIM3_Stop();
+	tim3_flag = 0;
 	//使能脚：高使能 初始化
 	rt_pin_write(eM1_en,PIN_LOW);	
 	rt_pin_write(eA1_P,PIN_LOW);
