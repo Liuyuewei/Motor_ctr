@@ -86,10 +86,19 @@
 #define	CHANNEL4_F	rt_pin_read(eChannel4_F)
 #define	CHANNEL4_B	rt_pin_read(eChannel4_B)
 
+/********************定时器**********************/
+// Tout = ARR * PSC / 72000000 s
+// Tout:定时器中断周期
+// 72000000:为72MHz 
+// 通过测试 ARR最小为14，即1.4ms 频率为 1000/1.4 接近1k
+// ARR 越大 电机频率越低
+#define ARR	14		//自动重装载寄存器周期的值
+#define PSC	7200	//时钟频率除数的预分频值
+
 //定义按键初始值
-rt_uint8_t key_f = 1;	//正转
-rt_uint8_t key_r = 1;	//反转
-rt_uint8_t key_s = 1;	//停止
+static rt_uint8_t key_f = 1;	//正转
+static rt_uint8_t key_r = 1;	//反转
+static rt_uint8_t key_s = 1;	//停止
 
 rt_uint8_t step_f = 1;
 rt_uint8_t step_r = 4;
@@ -156,6 +165,7 @@ void rt_hw_motor_init(void)
 	rt_pin_mode(eKEY_R,PIN_MODE_INPUT_PULLUP);	
 	rt_pin_mode(eKEY_S,PIN_MODE_INPUT_PULLUP);
 	
+	
 	//四个通道限位	正常情况为低电平，到达该位置时为高，指示灯亮
 	rt_pin_mode(eChannel1_F,PIN_MODE_INPUT_PULLDOWN);
 	rt_pin_mode(eChannel1_B,PIN_MODE_INPUT_PULLDOWN);
@@ -180,19 +190,19 @@ void rt_hw_motor_init(void)
 static void key_scan(void)
 {
 	//按键：低电平按下，高电平释放
-	if(rt_pin_read(eKEY_F) == 0)
+	if(rt_pin_read(eKEY_F) == PIN_LOW)
 	{
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_f = 0;
 	}
 		
-	if(rt_pin_read(eKEY_R) == 0)
+	else if(rt_pin_read(eKEY_R) == PIN_LOW)
 	{
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_r = 0;
 	}
 	
-	if(rt_pin_read(eKEY_S) == 0)
+	else if(rt_pin_read(eKEY_S) == PIN_LOW)
 	{
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_s = 0;
@@ -300,10 +310,11 @@ static void motor_run_stop()
 static void motor_thread_entry(void *parameter)
 {
     rt_hw_motor_init();
-	TIM3_Init(5000-1,9000-1);	//用来设置定时器频率
+	TIM3_Init(ARR,PSC - 1);	//初始化定时器并设置中断周期
 	//启动之后电机自动往反运动
     while (1)
     {
+		//用电脑仿真是，按键扫描得到的值一直为低电平。可能是仿真的原因，具体得拿硬件测试是否为代码bug。
 		key_scan();
 		if(key_f == 0)
 		{
@@ -340,7 +351,7 @@ static void motor_thread_entry(void *parameter)
 		}	
 		else
 		{
-			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//500ms	
+			rt_thread_delay(RT_TICK_PER_SECOND / 4);	//250ms	
 			LOG(MOTOR_DEG,("motor idle !\r\n"));
 		}	
     }

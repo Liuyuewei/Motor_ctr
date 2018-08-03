@@ -6,14 +6,14 @@
 #include "common.h"
 #include "log.h"
 
-#define TIM3_DEG	0
+#define TIM3_DEG	1
 #define TIM3_RES	1
 struct rt_semaphore timer_sem;
 
 void timer_semaphore_init()
 {
 	rt_err_t result;	
-	result = rt_sem_init(&timer_sem,"ssem",0,RT_IPC_FLAG_PRIO);
+	result = rt_sem_init(&timer_sem,"tim3_sem",0,RT_IPC_FLAG_PRIO);
 	if(result != RT_EOK)
 	rt_kprintf("Timer sem init failed!\r\n");
 }

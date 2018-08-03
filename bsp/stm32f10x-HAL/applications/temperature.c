@@ -102,7 +102,7 @@ static void tem_thread_entry(void *parameter)
 		{
 //			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
 //			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
-			hole_regist_write_float(tem[i],eTem1 + i * 2);			
+			hole_regist_write_float(tem[i],eTem1_h + i * 2);			
 			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//ÑÓÊ±500ms
 		}
     }
