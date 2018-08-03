@@ -91,14 +91,18 @@ static void tem_thread_entry(void *parameter)
 	//查找设备
 	find_mlx90614();
 	
+	tem[0] = 32.78;
+	tem[1] = 42.56;
+	tem[2] = 58.32;
+	tem[3] = 67.32;
 
     while (1)
     {
 		for(u8_t i=0;i<4;i++)
 		{
-			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
-			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
-			hole_regist_write_float(tem[i],eTem1 + i);			
+//			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
+//			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
+			hole_regist_write_float(tem[i],eTem1 + i * 2);			
 			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//延时500ms
 		}
     }

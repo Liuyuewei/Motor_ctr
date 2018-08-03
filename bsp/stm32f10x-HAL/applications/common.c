@@ -15,5 +15,5 @@ void hole_regist_write_float(float data,int location)
     data_l = (*(p + 2) << 8) | *(p + 3);
 
 	usSRegHoldBuf[location]		= data_h;
-	usSRegHoldBuf[location + 1]	= data_h;	
+	usSRegHoldBuf[location + 1]	= data_l;	
 }

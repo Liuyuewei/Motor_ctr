@@ -60,7 +60,7 @@ typedef enum pinName
 typedef enum hold_reginst
 {
 	//四个通道温度
-	eTem1,
+	eTem1 = 0,
 	eTem2,
 	eTem3,
 	eTem4,
