@@ -52,10 +52,10 @@ static int readMlx90614(struct rt_i2c_bus_device * i2c_device,unsigned char *dat
 	msg[0].len = 1;
 	msg[0].buf = buf;
 	
-	//重启之后直接去读取2字节的数据
+	//重启之后直接去读取3字节的数据
 	msg[1].addr  = I2C_ADDR;
 	msg[1].flags = RT_I2C_RD;
-	msg[1].len = 2;
+	msg[1].len = 3;
 	msg[1].buf = data;
 	
 	err =  rt_i2c_transfer(i2c_device, msg, 2);

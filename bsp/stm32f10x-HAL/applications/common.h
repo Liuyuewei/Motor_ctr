@@ -56,7 +56,18 @@ typedef enum pinName
 	eTem4_SDA,							//通道4温度传感器SDA		PC11
 			
 }pinName_t;
-
+//GPIO enum
+typedef enum hold_reginst
+{
+	//四个通道温度
+	eTem1,
+	eTem2,
+	eTem3,
+	eTem4,
+	
+	
+			
+}hold_reginst_t;
 
 //线程优先级	RT_THREAD_PRIORITY_MAX	32
 
@@ -67,9 +78,8 @@ typedef enum pinName
 /* 信号量控制块 */
 extern struct rt_semaphore timer_sem;
 
-/******对modbus应用API进行封装******/
-void hold_regist_write(UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode);
-
+/******将浮点数写入保持寄存器******/
+void hole_regist_write_float(float data,int location);
 
 
 #endif

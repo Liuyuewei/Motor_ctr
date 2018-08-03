@@ -11,8 +11,7 @@
 #include "mb.h"
 
 
-//从机地址
-#define SLAVE_ADD	0X66
+
 //从机串口	3
 #define SLAVE_UART	0X03
 //波特率
@@ -35,13 +34,7 @@ void rt_modbus_init(void)
 static void modbus_thread_entry(void *parameter)
 {
 	rt_modbus_init();
-	
-	unsigned char buff[] = {0x00,0x11,0x00,0x22,0x00,0x33};
-	
-	hold_regist_write(buff,0,3,MB_REG_WRITE);
-	
-	
-	
+		
     while (1)
     {
 		//FreeMODBUS不断查询

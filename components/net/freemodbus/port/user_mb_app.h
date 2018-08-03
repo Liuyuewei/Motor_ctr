@@ -16,6 +16,8 @@
 #define S_REG_INPUT_NREGS             100
 #define S_REG_HOLDING_START           0
 #define S_REG_HOLDING_NREGS           100
+
+extern USHORT   usSRegHoldBuf[S_REG_HOLDING_NREGS]           ;
 /* salve mode: holding register's all address */
 #define          S_HD_RESERVE                     0
 /* salve mode: input register's all address */

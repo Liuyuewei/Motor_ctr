@@ -14,18 +14,35 @@
 #include "drv_iic3.h"
 #include "drv_iic4.h"
 #include "drv_mlx90614.h"
-
+#include "type_def.h"
+#include "string.h"
 
 #define MLX90614_DEG	1
 #define MLX90614_RES	0
 
-rt_device_t MLX90614_device1;
-rt_device_t MLX90614_device2;
-rt_device_t MLX90614_device3;
-rt_device_t MLX90614_device4;
+rt_device_t device[4];
+
+//MLX90614设备名字
+static const char* MLX90614_name[] = 
+{
+	"mlx90614_1",
+	"mlx90614_2",
+	"mlx90614_3",
+	"mlx90614_4"
+};
+//IIC总线名字
+static const char* IIC_name[] = 
+{
+	"iic1",
+	"iic2",
+	"iic3",
+	"iic4"
+};
 
 ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t tem_stack[ 512 ];
+
+static rt_uint8_t 	tem_stack[ 512 ];
+
 /* 线程的TCB控制块 */
 static struct rt_thread tem_thread;
 
@@ -38,73 +55,52 @@ void rt_tem_init(void)
 	IIC4_init();
 	
 	//结合IIC总线，初始化设备
-	mlx90614_Init("mlx90614_1","iic1");
-	mlx90614_Init("mlx90614_2","iic2");
-	mlx90614_Init("mlx90614_3","iic3");
-	mlx90614_Init("mlx90614_4","iic4");
-	
+	for(int i = 0;i<4;i++)
+	{
+		mlx90614_Init(MLX90614_name[i],IIC_name[i]);
+	}
 }
 static void find_mlx90614()
 {
-	
-	MLX90614_device1 = rt_device_find("mlx90614_1");
-	if(MLX90614_device1 ==RT_NULL)
+	for(int i=0;i<4;i++)
 	{
-		LOG(MLX90614_DEG,("[%s]==>not find!\r\n","mlx90614_1"));
-		return;
+		device[i] = rt_device_find(MLX90614_name[i]);
+		if(device[i] == RT_NULL)
+		{
+			LOG(MLX90614_DEG,("[%s]==>not find!\r\n",MLX90614_name[i]));
+			return;
+		}	
 	}
-	
-	MLX90614_device2 = rt_device_find("mlx90614_2");
-	if(MLX90614_device2 ==RT_NULL)
-	{
-		LOG(MLX90614_DEG,("[%s]==>not find!\r\n","mlx90614_2"));
-		return;
-	}
-	
-	MLX90614_device3 = rt_device_find("mlx90614_3");
-	if(MLX90614_device3 ==RT_NULL)
-	{
-		LOG(MLX90614_DEG,("[%s]==>not find!\r\n","mlx90614_3"));
-		return;
-	}
-	
-	MLX90614_device4 = rt_device_find("mlx90614_4");
-	if(MLX90614_device4 ==RT_NULL)
-	{
-		LOG(MLX90614_DEG,("[%s]==>not find!\r\n","mlx90614_4"));
-		return;
-	}	
 }
 
 static void tem_thread_entry(void *parameter)
 { 
-	u8_t buf1[2];
-	u8_t buf2[2];
-	u8_t buf3[2];
-	u8_t buf4[2];
+	float tem[4];
 	
+	typedef struct
+	{
+		u8_t date_l;
+		u8_t date_h;
+		u8_t pec;
+	}buf_t;
+	
+	buf_t buf[4];
+	
+	//初始化IIC总线及设备
     rt_tem_init();
+	//查找设备
 	find_mlx90614();
 	
 
     while (1)
     {
-		rt_device_control(MLX90614_device1,MLX90614_GET_DATA,buf1);  
-		
-		rt_thread_delay(RT_TICK_PER_SECOND / 2);
-		
-		rt_device_control(MLX90614_device2,MLX90614_GET_DATA,buf2);  
-		
-		rt_thread_delay(RT_TICK_PER_SECOND / 2);
-		
-		rt_device_control(MLX90614_device3,MLX90614_GET_DATA,buf3);  
-		
-		rt_thread_delay(RT_TICK_PER_SECOND / 2);
-		
-		rt_device_control(MLX90614_device4,MLX90614_GET_DATA,buf4);  
-		
-		rt_thread_delay(RT_TICK_PER_SECOND / 2);
-	
+		for(u8_t i=0;i<4;i++)
+		{
+			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
+			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
+			hole_regist_write_float(tem[i],eTem1 + i);			
+			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//延时500ms
+		}
     }
 }
 
