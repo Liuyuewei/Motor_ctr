@@ -13,7 +13,7 @@
 #include "led.h"
 #include "log.h"
 
-#define LED_DEG	1
+#define LED_DEG	0
 #define LED_RES	0
 
 ALIGN(RT_ALIGN_SIZE)

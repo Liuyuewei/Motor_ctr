@@ -14,21 +14,32 @@
 #include "drv_iic3.h"
 #include "drv_iic4.h"
 #include "drv_mlx90614.h"
+
+//#include "drv_mlx90614_1.h"
+//#include "drv_mlx90614_2.h"
+//#include "drv_mlx90614_3.h"
+//#include "drv_mlx90614_4.h"
+
 #include "type_def.h"
 #include "string.h"
 
 #define TEM_DEG	1
 #define TEM_RES	0
 
+#define MLX90614_GET_DATA     0x02    //读数据
+
 rt_device_t device[4];
 
 //MLX90614设备名字
+//设备名字的长度有要求，如果太长的话后面的就无法识别。
+//在注册设备时会出现错误。
+//多个设备相同时最好在前面几个字母加以区别
 static const char* MLX90614_name[] = 
 {
-	"mlx90614_1",
-	"mlx90614_2",
-	"mlx90614_3",
-	"mlx90614_4"
+	"TEM1_DEVICE",
+	"TEM2_DEVICE",
+	"TEM3_DEVICE",
+	"TEM4_DEVICE"
 };
 //IIC总线名字
 static const char* IIC_name[] = 
@@ -48,16 +59,31 @@ static struct rt_thread tem_thread;
 
 void rt_tem_init(void)
 {
+	rt_err_t err;
 	//初始化IIC总线
-	IIC1_init();
-	IIC2_init();
-	IIC3_init();
-	IIC4_init();
+	err = IIC1_init();
+	if(err != RT_EOK)
+	rt_kprintf("IIC1 init failed !\r\n");
+	
+	err = IIC2_init();
+	if(err != RT_EOK)
+	rt_kprintf("IIC1 init failed !\r\n");
+	
+	err = IIC3_init();
+	if(err != RT_EOK)
+	rt_kprintf("IIC1 init failed !\r\n");
+	
+	err = IIC4_init();
+	if(err != RT_EOK)
+	rt_kprintf("IIC1 init failed !\r\n");
+	
 	
 	//结合IIC总线，初始化设备
 	for(int i = 0;i<4;i++)
 	{
-		mlx90614_Init(MLX90614_name[i],IIC_name[i]);
+		err = mlx90614_Init(MLX90614_name[i],IIC_name[i]);
+		if(err != RT_EOK)
+		rt_kprintf("IIC_device[%s] IIC_buf[%s] init failed !\r\n",MLX90614_name[i],IIC_name[i]);
 	}
 }
 static void find_mlx90614()
@@ -76,7 +102,7 @@ static void find_mlx90614()
 static void tem_thread_entry(void *parameter)
 { 
 	float tem[4];
-	
+	char data[20];
 	typedef struct
 	{
 		u8_t date_l;
@@ -91,23 +117,19 @@ static void tem_thread_entry(void *parameter)
 	//查找设备
 	find_mlx90614();
 	
-#if TEM_DEG
-	tem[0] = 32.78;
-	tem[1] = 42.56;
-	tem[2] = 58.32;
-	tem[3] = 67.32;
-#endif
-	
     while (1)
     {
 		for(u8_t i=0;i<4;i++)
 		{
-#if	!TEM_DEG
 			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
 			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
-#endif
-			hole_regist_write_float(tem[i],eTem1_h + i * 2);			
-			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//延时500ms
+			hole_regist_write_float(tem[i],eTem1_h + i * 2);	
+			sprintf(data,"TEM %d => %0.2f",i+1,tem[i]);			
+			LOG(TEM_DEG,("%s\r\n",data));			
+			if(i == 3)
+			LOG(TEM_DEG,("********************\r\n"));
+			rt_thread_delay(RT_TICK_PER_SECOND);	//延时1000ms	
+			
 		}
     }
 }

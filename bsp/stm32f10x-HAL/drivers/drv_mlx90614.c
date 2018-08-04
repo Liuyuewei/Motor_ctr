@@ -10,6 +10,16 @@
 
 #define I2C_ADDR        0X00 >> 1
 
+#define MLX90614_READ_STATUS  0x01    //¶Á×´Ì¬ÃüÁî
+#define MLX90614_GET_DATA     0x02    //¶ÁÊý¾Ý
+
+
+typedef struct Mlx90614Device
+{
+    struct rt_device device;
+    struct rt_i2c_bus_device *iicBus;
+}Mlx90614Device_t;
+
 /*
 * brief: write cmd
 * param: None
@@ -70,7 +80,7 @@ static int readMlx90614(struct rt_i2c_bus_device * i2c_device,unsigned char *dat
 * param: None
 * retval None
 */
-rt_err_t rt_mlx90614_control(rt_device_t dev, rt_uint8_t cmd, void *args)
+static rt_err_t rt_mlx90614_control(rt_device_t dev, rt_uint8_t cmd, void *args)
 {
     Mlx90614Device_t * Mlx90614Device;
     int err;
@@ -98,12 +108,13 @@ rt_err_t rt_mlx90614_control(rt_device_t dev, rt_uint8_t cmd, void *args)
 * param: None
 * retval None
 */
-void mlx90614_Init(const char *name,const char * bus)
+rt_err_t mlx90614_Init(const char *name,const char * bus)
 {
+	rt_err_t err;
     Mlx90614Device_t * device;
     device = rt_malloc(sizeof(Mlx90614Device_t));
     if(device == RT_NULL)
-        return;
+        return RT_ERROR;
     rt_memset(device,0,sizeof(Mlx90614Device_t));
 
     device->device.type	= RT_Device_Class_Char;
@@ -122,10 +133,10 @@ void mlx90614_Init(const char *name,const char * bus)
     if(device->iicBus == RT_NULL)
     {
         rt_kprintf("not find i2c device\n");
-        return;
+        return RT_ERROR;
     }	
-    rt_device_register(&device->device, name, RT_DEVICE_FLAG_RDWR);
-    return;
+    err = rt_device_register(&device->device, name, RT_DEVICE_FLAG_RDWR);
+    return err;
 }
 
 

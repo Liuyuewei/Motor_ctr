@@ -108,7 +108,7 @@ static const struct rt_i2c_bit_ops stm32_i2c_bit_ops =
 * param: None
 * retval None
 */
-void IIC2_init(void)
+rt_err_t IIC2_init(void)
 {
     static struct rt_i2c_bus_device stm32_iic2;
     GPIO_Configuration();
@@ -116,7 +116,7 @@ void IIC2_init(void)
     rt_memset((void *)&stm32_iic2,0,sizeof(struct rt_i2c_bus_device));
     stm32_iic2.ops = (void *)&stm32_i2c_bit_ops;
     stm32_iic2.priv = (void *)&stm32_i2c_bit_ops;
-    rt_i2c_bit_add_bus(&stm32_iic2,"iic2");
+    return rt_i2c_bit_add_bus(&stm32_iic2,"iic2");
 }
 
 
