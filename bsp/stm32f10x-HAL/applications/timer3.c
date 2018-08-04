@@ -18,6 +18,8 @@ rt_uint8_t step_r = 4;
 #define MOTOR_SETP3 3
 #define MOTOR_SETP4 4
 
+//两相四拍
+#define DOUBLE	1
 #if 1
 //电机1
 #define M1_EN_H		rt_pin_write(eM1_en,1)		//电机1 使能高
@@ -123,26 +125,58 @@ static void motor_run_forward()
 	switch(step_f)
 	{
 		case MOTOR_SETP1:
-			MOTOR1_STEP1;
-			MOTOR2_STEP1;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP1;
+				MOTOR2_STEP1;
+			}
+			else
+			{
+				MOTOR1_STEP1_S;
+				MOTOR2_STEP1_S;	
+			}
 			step_f++;
 		break;
 		
 		case MOTOR_SETP2:
-			MOTOR1_STEP2;
-			MOTOR2_STEP2;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP2;
+				MOTOR2_STEP2;
+			}
+			else
+			{
+				MOTOR1_STEP2_S;
+				MOTOR2_STEP2_S;	
+			}
 			step_f++;
 		break;
 		
 		case MOTOR_SETP3:
-			MOTOR1_STEP3;
-			MOTOR2_STEP3;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP3;
+				MOTOR2_STEP3;
+			}
+			else
+			{
+				MOTOR1_STEP3_S;
+				MOTOR2_STEP3_S;	
+			}
 			step_f++;
 		break;
 		
 		case MOTOR_SETP4:
-			MOTOR1_STEP4;
-			MOTOR2_STEP4;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP4;
+				MOTOR2_STEP4;
+			}
+			else
+			{
+				MOTOR1_STEP4_S;
+				MOTOR2_STEP4_S;	
+			}
 			if(step_f >= 4)
 			step_f = 1;
 		break;				
@@ -159,27 +193,59 @@ static void motor_run_reversal()
 	switch(step_r)
 	{
 		case MOTOR_SETP1:
-			MOTOR1_STEP1;
-			MOTOR2_STEP1;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP1;
+				MOTOR2_STEP1;
+			}
+			else
+			{
+				MOTOR1_STEP1_S;
+				MOTOR2_STEP1_S;	
+			}
 			if(step_r <= 1)
 			step_r = 4;
 		break;
 		
 		case MOTOR_SETP2:
-			MOTOR1_STEP2;
-			MOTOR2_STEP2;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP2;
+				MOTOR2_STEP2;
+			}
+			else
+			{
+				MOTOR1_STEP2_S;
+				MOTOR2_STEP2_S;	
+			}
 			step_r--;
 		break;
 		
 		case MOTOR_SETP3:
-			MOTOR1_STEP3;
-			MOTOR2_STEP3;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP3;
+				MOTOR2_STEP3;
+			}
+			else
+			{
+				MOTOR1_STEP3_S;
+				MOTOR2_STEP3_S;	
+			}
 			step_r--;
 		break;
 		
 		case MOTOR_SETP4:
-			MOTOR1_STEP4;
-			MOTOR2_STEP4;
+			if(DOUBLE)
+			{
+				MOTOR1_STEP4;
+				MOTOR2_STEP4;
+			}
+			else
+			{
+				MOTOR1_STEP4_S;
+				MOTOR2_STEP4_S;	
+			}
 			step_r--;
 		break;				
 	}
@@ -223,5 +289,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		LOG(TIM3_DEG,("TIM3 running ......\r\n"));
 	}
 }
+
 #include "finsh.h"
 MSH_CMD_EXPORT(TIM3_Stop, stop tim3);
+

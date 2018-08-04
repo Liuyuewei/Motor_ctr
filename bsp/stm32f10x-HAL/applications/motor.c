@@ -11,6 +11,7 @@
 #include "timer3.h"
 #include "log.h"
 
+
 #define MOTOR_DEG	0
 #define MOTOR_RES	0
 
@@ -48,6 +49,8 @@
 rt_uint8_t key_f = 1;	//正转
 rt_uint8_t key_r = 1;	//反转
 rt_uint8_t key_s = 1;	//停止
+//定时器启动标志
+static rt_uint8_t tim3_start_flag = 0;
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t motor_stack[ 512 ];
@@ -171,7 +174,14 @@ static void motor_thread_entry(void *parameter)
 		key_scan();
 		if(key_f == 0)
 		{
-			TIM3_Start();
+			//如果
+			if(!tim3_start_flag)
+			{
+				TIM3_Start();
+				tim3_start_flag = 1;
+			}
+			
+			
 			key_r = 1;
 			key_s = 1;
 			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
@@ -185,7 +195,11 @@ static void motor_thread_entry(void *parameter)
 		}
 		else if(key_r == 0)
 		{	
-			TIM3_Start();
+			if(!tim3_start_flag)
+			{
+				TIM3_Start();
+				tim3_start_flag = 1;
+			}
 			key_f = 1;
 			key_s = 1;
 			if(CHANNEL1_B == 1 || CHANNEL2_B == 1 || CHANNEL3_B == 1 || CHANNEL4_B == 1)
@@ -198,6 +212,7 @@ static void motor_thread_entry(void *parameter)
 		}
 		else if(key_s == 0)
 		{
+			tim3_start_flag = 0;
 			key_r = 1;
 			key_f = 1;
 			TIM3_Stop();
@@ -230,6 +245,13 @@ int thread_init_motor(void)
     return 0;
 }
 
+
+//void TM3_Init_my(rt_uint16_t arr)
+//{
+//	TIM3_Stop();
+//	TIM3_Init(arr,PSC - 1);
+//	
+//}
     /* 如果设置了RT_SAMPLES_AUTORUN，则加入到初始化线程中自动运行 */
 #if defined (RT_SAMPLES_AUTORUN) && defined(RT_USING_COMPONENTS_INIT)
     INIT_APP_EXPORT(motor_ctr_init);
@@ -237,5 +259,5 @@ int thread_init_motor(void)
 
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(thread_init_motor, motor contrl);
-
+//FINSH_FUNCTION_EXPORT(TM3_Init_my,arr);
 
