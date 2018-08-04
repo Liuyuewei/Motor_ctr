@@ -13,58 +13,6 @@
 
 #define MOTOR_DEG	0
 #define MOTOR_RES	0
-//电机1
-#define M1_EN_H		rt_pin_write(eM1_en,1)		//电机1 使能高
-#define M1_EN_L		rt_pin_write(eM1_en,0)		//电机1 使能低
-#define	A1_P_H		rt_pin_write(eA1_P, 1)		//电机1 A+ 高
-#define	A1_P_L		rt_pin_write(eA1_P, 0)		//电机1 A+ 低
-#define	A1_N_H		rt_pin_write(eA1_N, 1)		//电机1 A- 高
-#define	A1_N_L		rt_pin_write(eA1_N, 0)		//电机1 A- 低
-#define	B1_P_H		rt_pin_write(eB1_P, 1)		//电机1 B+ 高
-#define	B1_P_L		rt_pin_write(eB1_P, 0)		//电机1 B+ 低
-#define	B1_N_H		rt_pin_write(eB1_N, 1)		//电机1 B- 高
-#define	B1_N_L		rt_pin_write(eB1_N, 0)		//电机1 B- 低
-//电机2
-#define M2_EN_H		rt_pin_write(eM2_en,1)		//电机1 使能高
-#define M2_EN_L		rt_pin_write(eM2_en,0)		//电机1 使能低
-#define	A2_P_H		rt_pin_write(eA2_P, 1)		//电机1 A+ 高
-#define	A2_P_L		rt_pin_write(eA2_P, 0)		//电机1 A+ 低
-#define	A2_N_H		rt_pin_write(eA2_N, 1)		//电机1 A- 高
-#define	A2_N_L		rt_pin_write(eA2_N, 0)		//电机1 A- 低
-#define	B2_P_H		rt_pin_write(eB2_P, 1)		//电机1 B+ 高
-#define	B2_P_L		rt_pin_write(eB2_P, 0)		//电机1 B+ 低
-#define	B2_N_H		rt_pin_write(eB2_N, 1)		//电机1 B- 高
-#define	B2_N_L		rt_pin_write(eB2_N, 0)		//电机1 B- 低
-
-//两相，四拍：(+A)(+B)--(-A)(+B)--(-A)(-B)--(+A)(-B)-- 
-//单相，四拍：(+A)--(+B)--(-A)--(-B)-- 
-
-#if 1
-//两相四排
-//电机1	
-#define MOTOR1_STEP1	A1_P_H;	A1_N_L;  B1_P_H; B1_N_L
-#define MOTOR1_STEP2	A1_P_L;	A1_N_H;  B1_P_H; B1_N_L
-#define MOTOR1_STEP3	A1_P_L;	A1_N_H;  B1_P_L; B1_N_H
-#define MOTOR1_STEP4	A1_P_H;	A1_N_L;  B1_P_L; B1_N_H
-//电机2
-#define MOTOR2_STEP1	A2_P_H;	A2_N_L;  B2_P_H; B2_N_L
-#define MOTOR2_STEP2	A2_P_L;	A2_N_H;  B2_P_H; B2_N_L
-#define MOTOR2_STEP3	A2_P_L;	A2_N_H;  B2_P_L; B2_N_H
-#define MOTOR2_STEP4	A2_P_H;	A2_N_L;  B2_P_L; B2_N_H
-
-#else	
-//单相四排
-//电机1	
-#define MOTOR1_STEP1_S	A1_P_H;	A1_N_L 
-#define MOTOR1_STEP2_S	B1_P_H; B1_N_L
-#define MOTOR1_STEP3_S	A1_P_L;	A1_N_H
-#define MOTOR1_STEP4_S	B1_P_L; B1_N_H
-//电机2
-#define MOTOR2_STEP1_S	A2_P_H;	A2_N_L
-#define MOTOR2_STEP2_S	B2_P_H; B2_N_L 
-#define MOTOR2_STEP3_S	A2_P_L;	A2_N_H
-#define MOTOR2_STEP4_S	B2_P_L; B2_N_H
-#endif
 
 /********************按键输入读取**********************/
 #define	KEY_F	rt_pin_read(eKEY_F)		//正转
@@ -93,18 +41,13 @@
 // 通过测试 ARR最小为14，即1.4ms 频率为 1000/1.4 接近1k。
 // 如果ARR再小的话，则motor线程无法及时处理定时器释放的信号量
 // ARR 越大 电机频率越低
-#define ARR	30		//自动重装载寄存器周期的值
+#define ARR	20		//自动重装载寄存器周期的值
 #define PSC	7200	//时钟频率除数的预分频值
 
 //定义按键初始值
-static rt_uint8_t key_f = 1;	//正转
-static rt_uint8_t key_r = 1;	//反转
-static rt_uint8_t key_s = 1;	//停止
-
-rt_uint8_t step_f = 1;
-rt_uint8_t step_r = 4;
-
-rt_uint8_t tim3_flag = 0;
+rt_uint8_t key_f = 1;	//正转
+rt_uint8_t key_r = 1;	//反转
+rt_uint8_t key_s = 1;	//停止
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t motor_stack[ 512 ];
@@ -184,10 +127,7 @@ void rt_hw_motor_init(void)
 	
 }
 
-#define MOTOR_SETP1 1
-#define MOTOR_SETP2 2
-#define MOTOR_SETP3 3
-#define MOTOR_SETP4 4
+
 
 //按键扫描
 static void key_scan(void)
@@ -195,7 +135,7 @@ static void key_scan(void)
 	//按键：低电平按下，高电平释放
 	if(rt_pin_read(eKEY_F) == PIN_LOW)
 	{
-//		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_f = 0;
 		key_r = 1;
 		key_s = 1;
@@ -203,7 +143,7 @@ static void key_scan(void)
 		
 	else if(rt_pin_read(eKEY_R) == PIN_LOW)
 	{
-//		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_f = 1;
 		key_r = 0;
 		key_s = 1;
@@ -211,122 +151,15 @@ static void key_scan(void)
 	
 	else if(rt_pin_read(eKEY_S) == PIN_LOW)
 	{
-//		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
 		key_f = 1;
 		key_r = 1;
 		key_s = 0;
 	}
 }
-//电机正转
-static void motor_run_forward()
-{
-	rt_err_t result;	
-	if(tim3_flag == 0)
-	{
-		TIM3_Start();
-		tim3_flag = 1;
-	}
-	
-	rt_pin_write(eM1_en,PIN_HIGH);
-	
-	//永久等待信号量，获取信号量，则信号量的数量减1
-	result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
-	
-	if(result == RT_EOK )
-	{
-		switch(step_f)
-		{
-			case MOTOR_SETP1:
-				MOTOR1_STEP1;
-				LOG(MOTOR_DEG,("step1\r\n"));
-				step_f++;
-			break;
-			
-			case MOTOR_SETP2:
-				MOTOR1_STEP2;
-				LOG(MOTOR_DEG,("step2\r\n"));
-				step_f++;
-			break;
-			
-			case MOTOR_SETP3:
-				MOTOR1_STEP3;
-				LOG(MOTOR_DEG,("step3\r\n"));
-				step_f++;
-			break;
-			
-			case MOTOR_SETP4:
-				MOTOR1_STEP4;
-				LOG(MOTOR_DEG,("step4\r\n"));
-				if(step_f >= 4)
-				step_f = 1;
-			break;				
-		}
-	}
-}
-//电机反转
-static void motor_run_reversal()
-{
-	rt_err_t result;
-	if(tim3_flag == 0)
-	{
-		TIM3_Start();
-		tim3_flag = 1;
-	}
-	rt_pin_write(eM1_en,PIN_HIGH);
-	
-	//永久等待信号量，获取信号量，则信号量的数量减1
-	result = rt_sem_take(&timer_sem,RT_WAITING_FOREVER);
-	
-	if(result == RT_EOK )
-	{
-		switch(step_r)
-		{
-			case MOTOR_SETP1:
-				MOTOR1_STEP1;
-				LOG(MOTOR_DEG,("step1\r\n"));
-				if(step_r <= 1)
-				step_r = 4;
-			break;
-			
-			case MOTOR_SETP2:
-				MOTOR1_STEP2;
-				LOG(MOTOR_DEG,("step2\r\n"));
-				step_r--;
-			break;
-			
-			case MOTOR_SETP3:
-				MOTOR1_STEP3;
-				LOG(MOTOR_DEG,("step3\r\n"));
-				step_r--;
-			break;
-			
-			case MOTOR_SETP4:
-				MOTOR1_STEP4;
-				LOG(MOTOR_DEG,("step4\r\n"));
-				step_r--;
-			break;				
-		}
-	}
-}
-//电机停止
-static void motor_run_stop()
-{
-	
-	TIM3_Stop();
-	tim3_flag = 0;
-	//使能脚：高使能 初始化
-	rt_pin_write(eM1_en,PIN_LOW);	
-	rt_pin_write(eA1_P,PIN_LOW);
-	rt_pin_write(eA1_N,PIN_LOW);	
-	rt_pin_write(eB1_P,PIN_LOW);
-	rt_pin_write(eB1_N,PIN_LOW);	
-	//使能脚：高使能		初始化
-	rt_pin_write(eM2_en,PIN_LOW);	
-	rt_pin_write(eA2_P,PIN_LOW);
-	rt_pin_write(eA2_N,PIN_LOW);	
-	rt_pin_write(eB2_P,PIN_LOW);
-	rt_pin_write(eB2_N,PIN_LOW);
-}
+
+
+
 static void motor_thread_entry(void *parameter)
 {
     rt_hw_motor_init();
@@ -334,13 +167,13 @@ static void motor_thread_entry(void *parameter)
 	//启动之后电机自动往反运动
     while (1)
     {
-		//用电脑仿真是，按键扫描得到的值一直为低电平。可能是仿真的原因，具体得拿硬件测试是否为代码bug。
+		//用电脑仿真是，按键扫描得到的值一直为低电平。可能是仿真的原因，用硬件测试正常。
 		key_scan();
 		if(key_f == 0)
 		{
+			TIM3_Start();
 			key_r = 1;
 			key_s = 1;
-			motor_run_forward();	
 			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
 			{
 				TIM3_Stop();
@@ -352,9 +185,9 @@ static void motor_thread_entry(void *parameter)
 		}
 		else if(key_r == 0)
 		{	
+			TIM3_Start();
 			key_f = 1;
 			key_s = 1;
-			motor_run_reversal();	
 			if(CHANNEL1_B == 1 || CHANNEL2_B == 1 || CHANNEL3_B == 1 || CHANNEL4_B == 1)
 			{
 				TIM3_Stop();
@@ -367,7 +200,7 @@ static void motor_thread_entry(void *parameter)
 		{
 			key_r = 1;
 			key_f = 1;
-			motor_run_stop();	
+			TIM3_Stop();
 		}	
 		else
 		{

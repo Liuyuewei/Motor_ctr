@@ -4,6 +4,11 @@
 #include "rtthread.h"
 #include "mb.h"
 
+//定义按键初始值
+extern rt_uint8_t key_f ;	//正转
+extern rt_uint8_t key_r;	//反转
+extern rt_uint8_t key_s;	//停止
+
 //GPIO enum
 typedef enum pinName
 {
