@@ -9,6 +9,7 @@
 #include "motor.h"
 #include "common.h"
 #include "timer3.h"
+#include "timer4.h"
 #include "log.h"
 
 
@@ -42,8 +43,9 @@
 // 通过测试 ARR最小为13，即1.3ms 频率为 1000/1.3 接近744Hz。
 // 如果ARR再小的话，则motor线程无法及时处理定时器释放的信号量
 // ARR 越大 电机频率越低
-#define ARR	13		//自动重装载寄存器周期的值
-#define PSC	7200	//时钟频率除数的预分频值
+#define ARR1	13		//自动重装载寄存器周期的值
+#define ARR2	100		//自动重装载寄存器周期的值
+#define PSC	7200		//时钟频率除数的预分频值
 
 //定义按键初始值
 rt_uint8_t key_f = 1;	//正转
@@ -175,7 +177,8 @@ static void key_scan(void)
 static void motor_thread_entry(void *parameter)
 {
     rt_hw_motor_init();
-	TIM3_Init(ARR,PSC - 1);	//初始化定时器并设置中断周期
+	TIM3_Init(ARR1,PSC - 1);	//初始化定时器并设置中断周期
+	TIM4_Init(ARR2,PSC - 1);
 	//启动之后电机自动往反运动
     while (1)
     {
@@ -187,6 +190,7 @@ static void motor_thread_entry(void *parameter)
 			if(!tim3_start_flag)
 			{
 				TIM3_Start();
+				TIM4_Start();
 				tim3_start_flag = 1;
 			}
 			key_r = 1;
@@ -194,6 +198,7 @@ static void motor_thread_entry(void *parameter)
 			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
 			{
 				TIM3_Stop();
+				TIM4_Stop();
 				tim3_start_flag = 0;
 				key_f = 1;
 				key_r = 0;
@@ -205,6 +210,7 @@ static void motor_thread_entry(void *parameter)
 			if(!tim3_start_flag)
 			{
 				TIM3_Start();
+				TIM4_Start();
 				tim3_start_flag = 1;
 			}
 			key_f = 1;
@@ -224,6 +230,7 @@ static void motor_thread_entry(void *parameter)
 			key_r = 1;
 			key_f = 1;
 			TIM3_Stop();
+			TIM4_Stop();
 			LOG(MOTOR_DEG,("motor idle !\r\n"));
 		}	
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//

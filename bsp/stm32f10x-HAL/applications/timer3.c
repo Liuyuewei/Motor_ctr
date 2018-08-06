@@ -33,16 +33,16 @@ rt_uint8_t step_r = 4;
 #define	B1_N_H		rt_pin_write(eB1_N, 1)		//电机1 B- 高
 #define	B1_N_L		rt_pin_write(eB1_N, 0)		//电机1 B- 低
 //电机2
-#define M2_EN_H		rt_pin_write(eM2_en,1)		//电机1 使能高
-#define M2_EN_L		rt_pin_write(eM2_en,0)		//电机1 使能低
-#define	A2_P_H		rt_pin_write(eA2_P, 1)		//电机1 A+ 高
-#define	A2_P_L		rt_pin_write(eA2_P, 0)		//电机1 A+ 低
-#define	A2_N_H		rt_pin_write(eA2_N, 1)		//电机1 A- 高
-#define	A2_N_L		rt_pin_write(eA2_N, 0)		//电机1 A- 低
-#define	B2_P_H		rt_pin_write(eB2_P, 1)		//电机1 B+ 高
-#define	B2_P_L		rt_pin_write(eB2_P, 0)		//电机1 B+ 低
-#define	B2_N_H		rt_pin_write(eB2_N, 1)		//电机1 B- 高
-#define	B2_N_L		rt_pin_write(eB2_N, 0)		//电机1 B- 低
+//#define M2_EN_H		rt_pin_write(eM2_en,1)		//电机1 使能高
+//#define M2_EN_L		rt_pin_write(eM2_en,0)		//电机1 使能低
+//#define	A2_P_H		rt_pin_write(eA2_P, 1)		//电机1 A+ 高
+//#define	A2_P_L		rt_pin_write(eA2_P, 0)		//电机1 A+ 低
+//#define	A2_N_H		rt_pin_write(eA2_N, 1)		//电机1 A- 高
+//#define	A2_N_L		rt_pin_write(eA2_N, 0)		//电机1 A- 低
+//#define	B2_P_H		rt_pin_write(eB2_P, 1)		//电机1 B+ 高
+//#define	B2_P_L		rt_pin_write(eB2_P, 0)		//电机1 B+ 低
+//#define	B2_N_H		rt_pin_write(eB2_N, 1)		//电机1 B- 高
+//#define	B2_N_L		rt_pin_write(eB2_N, 0)		//电机1 B- 低
 
 //两相，四拍：(+A)(+B)--(-A)(+B)--(-A)(-B)--(+A)(-B)-- 
 //单相，四拍：(+A)--(+B)--(-A)--(-B)-- 
@@ -55,10 +55,10 @@ rt_uint8_t step_r = 4;
 #define MOTOR1_STEP3	A1_P_L;	A1_N_H;  B1_P_L; B1_N_H
 #define MOTOR1_STEP4	A1_P_H;	A1_N_L;  B1_P_L; B1_N_H
 //电机2
-#define MOTOR2_STEP1	A2_P_H;	A2_N_L;  B2_P_H; B2_N_L
-#define MOTOR2_STEP2	A2_P_L;	A2_N_H;  B2_P_H; B2_N_L
-#define MOTOR2_STEP3	A2_P_L;	A2_N_H;  B2_P_L; B2_N_H
-#define MOTOR2_STEP4	A2_P_H;	A2_N_L;  B2_P_L; B2_N_H
+//#define MOTOR2_STEP1	A2_P_H;	A2_N_L;  B2_P_H; B2_N_L
+//#define MOTOR2_STEP2	A2_P_L;	A2_N_H;  B2_P_H; B2_N_L
+//#define MOTOR2_STEP3	A2_P_L;	A2_N_H;  B2_P_L; B2_N_H
+//#define MOTOR2_STEP4	A2_P_H;	A2_N_L;  B2_P_L; B2_N_H
 //单相四排
 //电机1	
 #define MOTOR1_STEP1_S	A1_P_H;	A1_N_L 
@@ -66,10 +66,10 @@ rt_uint8_t step_r = 4;
 #define MOTOR1_STEP3_S	A1_P_L;	A1_N_H
 #define MOTOR1_STEP4_S	B1_P_L; B1_N_H
 //电机2
-#define MOTOR2_STEP1_S	A2_P_H;	A2_N_L
-#define MOTOR2_STEP2_S	B2_P_H; B2_N_L 
-#define MOTOR2_STEP3_S	A2_P_L;	A2_N_H
-#define MOTOR2_STEP4_S	B2_P_L; B2_N_H
+//#define MOTOR2_STEP1_S	A2_P_H;	A2_N_L
+//#define MOTOR2_STEP2_S	B2_P_H; B2_N_L 
+//#define MOTOR2_STEP3_S	A2_P_L;	A2_N_H
+//#define MOTOR2_STEP4_S	B2_P_L; B2_N_H
 
 #endif
 
@@ -80,7 +80,7 @@ void TIM3_Start(void)
 {
 	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
 }
-void motor_stop();
+static void motor_stop(void);
 //停止定时器
 void TIM3_Stop(void)
 {
@@ -107,7 +107,7 @@ void TIM3_Init(rt_uint16_t arr,rt_uint16_t psc)
 }
 
 //定时器底层驱动，开启时钟，设置中断优先级
-//此函数会被 HAL_TIM_Base_Init()函数调用
+//此函数会被 HAL_TIM_Base_Init()函数调用		该函数不能用static定时
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 {
 	__HAL_RCC_TIM3_CLK_ENABLE(); 									//使能 TIM3 时钟
@@ -128,19 +128,17 @@ static void motor_run_forward()
 	rt_pin_write(eM2_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
 	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
-	DOUBLE = !usSRegHoldBuf[eDouble_ctr];
+	DOUBLE = !usSRegHoldBuf[eDouble_ctr1];
 	switch(step_f)
 	{
 		case MOTOR_SETP1:
 			if(DOUBLE)
 			{
 				MOTOR1_STEP1;
-				MOTOR2_STEP1;
 			}
 			else
 			{
 				MOTOR1_STEP1_S;
-				MOTOR2_STEP1_S;	
 			}
 			step_f++;
 		break;
@@ -149,12 +147,10 @@ static void motor_run_forward()
 			if(DOUBLE)
 			{
 				MOTOR1_STEP2;
-				MOTOR2_STEP2;
 			}
 			else
 			{
 				MOTOR1_STEP2_S;
-				MOTOR2_STEP2_S;	
 			}
 			step_f++;
 		break;
@@ -163,12 +159,10 @@ static void motor_run_forward()
 			if(DOUBLE)
 			{
 				MOTOR1_STEP3;
-				MOTOR2_STEP3;
 			}
 			else
 			{
 				MOTOR1_STEP3_S;
-				MOTOR2_STEP3_S;	
 			}
 			step_f++;
 		break;
@@ -177,12 +171,10 @@ static void motor_run_forward()
 			if(DOUBLE)
 			{
 				MOTOR1_STEP4;
-				MOTOR2_STEP4;
 			}
 			else
 			{
 				MOTOR1_STEP4_S;
-				MOTOR2_STEP4_S;	
 			}
 			if(step_f >= 4)
 			step_f = 1;
@@ -198,19 +190,17 @@ static void motor_run_reversal()
 	rt_pin_write(eM2_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
 	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
-	DOUBLE = ! usSRegHoldBuf[eDouble_ctr];
+	DOUBLE = ! usSRegHoldBuf[eDouble_ctr1];
 	switch(step_r)
 	{
 		case MOTOR_SETP1:
 			if(DOUBLE)
 			{
 				MOTOR1_STEP1;
-				MOTOR2_STEP1;
 			}
 			else
 			{
 				MOTOR1_STEP1_S;
-				MOTOR2_STEP1_S;	
 			}
 			if(step_r <= 1)
 			step_r = 4;
@@ -220,12 +210,10 @@ static void motor_run_reversal()
 			if(DOUBLE)
 			{
 				MOTOR1_STEP2;
-				MOTOR2_STEP2;
 			}
 			else
 			{
 				MOTOR1_STEP2_S;
-				MOTOR2_STEP2_S;	
 			}
 			step_r--;
 		break;
@@ -234,12 +222,10 @@ static void motor_run_reversal()
 			if(DOUBLE)
 			{
 				MOTOR1_STEP3;
-				MOTOR2_STEP3;
 			}
 			else
 			{
 				MOTOR1_STEP3_S;
-				MOTOR2_STEP3_S;	
 			}
 			step_r--;
 		break;
@@ -248,12 +234,10 @@ static void motor_run_reversal()
 			if(DOUBLE)
 			{
 				MOTOR1_STEP4;
-				MOTOR2_STEP4;
 			}
 			else
 			{
 				MOTOR1_STEP4_S;
-				MOTOR2_STEP4_S;	
 			}
 			step_r--;
 		break;				
@@ -261,7 +245,7 @@ static void motor_run_reversal()
 }
 
 //电机停止
-static void motor_stop()
+static void motor_stop(void)
 {
 	//使能脚：高使能 初始化
 	rt_pin_write(eM1_en,PIN_LOW);	
@@ -269,16 +253,16 @@ static void motor_stop()
 	rt_pin_write(eA1_N,PIN_LOW);	
 	rt_pin_write(eB1_P,PIN_LOW);
 	rt_pin_write(eB1_N,PIN_LOW);	
-	//使能脚：高使能		初始化
-	rt_pin_write(eM2_en,PIN_LOW);	
-	rt_pin_write(eA2_P,PIN_LOW);
-	rt_pin_write(eA2_N,PIN_LOW);	
-	rt_pin_write(eB2_P,PIN_LOW);
-	rt_pin_write(eB2_N,PIN_LOW);
+//	//使能脚：高使能		初始化
+//	rt_pin_write(eM2_en,PIN_LOW);	
+//	rt_pin_write(eA2_P,PIN_LOW);
+//	rt_pin_write(eA2_N,PIN_LOW);	
+//	rt_pin_write(eB2_P,PIN_LOW);
+//	rt_pin_write(eB2_N,PIN_LOW);
 }
 
 
-//定时器 3 中断服务函数调用
+//定时器 3 中断服务函数调用   该函数不能用static定时
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==(&TIM3_Handler))

@@ -73,7 +73,8 @@ typedef enum hold_reginst
 	eTem3_l,
 	eTem4_h,
 	eTem4_l,
-	eDouble_ctr	
+	eDouble_ctr1,
+	eDouble_ctr2	
 			
 }hold_reginst_t;
 

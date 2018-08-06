@@ -1,5 +1,5 @@
-#ifndef TIMER_H__
-#define TIMER_H__
+#ifndef TIMER3_H__
+#define TIMER3_H__
 #include <rtthread.h>
 #include "stm32f1xx_hal.h"
 
