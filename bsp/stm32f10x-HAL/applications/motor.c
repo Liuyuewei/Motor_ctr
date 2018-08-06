@@ -166,7 +166,7 @@ static void key_scan(void)
 static void motor_thread_entry(void *parameter)
 {
     rt_hw_motor_init();
-//	TIM3_Init(ARR,PSC - 1);	//初始化定时器并设置中断周期
+	TIM3_Init(ARR,PSC - 1);	//初始化定时器并设置中断周期
 	//启动之后电机自动往反运动
     while (1)
     {

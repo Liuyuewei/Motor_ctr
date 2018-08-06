@@ -73,15 +73,19 @@ rt_uint8_t step_r = 4;
 
 #endif
 
+
 TIM_HandleTypeDef TIM3_Handler; 									//定时器句柄
 //启动定时器
 void TIM3_Start(void)
 {
 	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
 }
+void motor_stop();
 //停止定时器
 void TIM3_Stop(void)
 {
+	//motor_stop before stop tim3.
+	motor_stop();
 	HAL_TIM_Base_Stop_IT(&TIM3_Handler);
 }
 //通用定时器 3 中断初始化
@@ -252,7 +256,7 @@ static void motor_run_reversal()
 }
 
 //电机停止
-static void motor_run_stop()
+static void motor_stop()
 {
 	//使能脚：高使能 初始化
 	rt_pin_write(eM1_en,PIN_LOW);	
@@ -284,7 +288,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		}
 		else if(key_s == 0)
 		{
-			motor_run_stop();
+			motor_stop();
 		}
 		LOG(TIM3_DEG,("TIM3 running ......\r\n"));
 	}
