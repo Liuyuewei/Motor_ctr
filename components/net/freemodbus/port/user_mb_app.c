@@ -19,7 +19,7 @@
  * File: $Id: user_mb_app.c,v 1.60 2013/11/23 11:49:05 Armink $
  */
 #include "user_mb_app.h"
-
+#include "common.h"
 /*------------------------Slave mode use these variables----------------------*/
 //Slave mode:DiscreteInputs variables
 USHORT   usSDiscInStart                               = S_DISCRETE_INPUT_START;
@@ -41,6 +41,7 @@ USHORT   usSRegInBuf[S_REG_INPUT_NREGS]               ;
 //Slave mode:HoldingRegister variables
 USHORT   usSRegHoldStart                              = S_REG_HOLDING_START;
 USHORT   usSRegHoldBuf[S_REG_HOLDING_NREGS]           ;
+
 
 /**
  * Modbus slave input register callback function.

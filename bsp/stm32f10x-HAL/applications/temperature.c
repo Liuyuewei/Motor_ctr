@@ -23,7 +23,7 @@
 #include "type_def.h"
 #include "string.h"
 
-#define TEM_DEG	0
+#define TEM_DEG	1
 #define TEM_RES	0
 
 #define MLX90614_GET_DATA     0x02    //读数据
@@ -101,8 +101,9 @@ static void find_mlx90614()
 
 static void tem_thread_entry(void *parameter)
 { 
-	float tem[4];
+	float tem[4] = {0,0,0,0};
 	char data[20];
+	rt_err_t err;
 	typedef struct
 	{
 		u8_t date_l;
@@ -119,10 +120,25 @@ static void tem_thread_entry(void *parameter)
 	
     while (1)
     {
+		//每次进来赋值前需要给它清零，否则会有一些临时的数
+		rt_memset(buf,0,sizeof(buf));
+		
 		for(u8_t i=0;i<4;i++)
 		{
-			rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
-			tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
+			err = rt_device_control(device[i],MLX90614_GET_DATA,&buf[i]);  
+			if(err == RT_EOK)
+			{
+				tem[i] = (buf[i].date_h<<8 | buf[i].date_l) * 0.02 -273.15;
+			}
+			else
+			{
+				rt_kprintf("I2C bus operation not supported\r\n");
+			}
+			if(tem[i] <= -100)
+				tem[i] =255;
+			else if(tem[i] >= 150)
+				tem[i] = 25;
+		
 			hole_regist_write_float(tem[i],eTem1_h + i * 2);	
 			sprintf(data,"TEM %d => %0.2f",i+1,tem[i]);			
 			LOG(TEM_DEG,("%s\r\n",data));			

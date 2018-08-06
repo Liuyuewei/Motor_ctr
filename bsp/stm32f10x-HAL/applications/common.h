@@ -66,12 +66,14 @@ typedef enum hold_reginst
 {
 	//四个通道温度
 	eTem1_h = 0,
+	eTem1_l,
+	eTem2_h,
 	eTem2_l,
 	eTem3_h,
 	eTem3_l,
 	eTem4_h,
-	eTem4_l
-	
+	eTem4_l,
+	eDouble_ctr	
 			
 }hold_reginst_t;
 

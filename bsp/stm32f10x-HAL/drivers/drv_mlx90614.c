@@ -69,10 +69,10 @@ static int readMlx90614(struct rt_i2c_bus_device * i2c_device,unsigned char *dat
 	msg[1].buf = data;
 	
 	err =  rt_i2c_transfer(i2c_device, msg, 2);
-	if(err != 1)
-		return -1;
+	if(err == 0)
+		return RT_ERROR;
 	else
-		return 0;
+		return RT_EOK;
 }
 
 /*
@@ -91,17 +91,20 @@ static rt_err_t rt_mlx90614_control(rt_device_t dev, rt_uint8_t cmd, void *args)
     switch(cmd)
     {
         case MLX90614_GET_DATA:
-        { 
+			//返回读取数据的字节数
             err = readMlx90614(Mlx90614Device->iicBus,args);
-			if(err != 0)
-			{
-				return RT_ERROR;
-			}
-           
-			return RT_EOK;
-        }          
-    }        
-    return RT_EOK;
+		break;
+                 
+    } 
+	//RT_EOK = 0
+	//RT_ERR = 1
+	//如果err == 0说明没有读取到数据
+	if(err != RT_EOK)
+	{
+		return RT_ERROR;
+	}
+	else return RT_EOK;
+	
 }
 /*
 * brief: Initialize .

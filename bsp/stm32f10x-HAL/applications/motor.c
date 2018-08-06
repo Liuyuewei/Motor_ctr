@@ -194,6 +194,7 @@ static void motor_thread_entry(void *parameter)
 			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
 			{
 				TIM3_Stop();
+				tim3_start_flag = 0;
 				key_f = 1;
 				key_r = 0;
 				key_s = 1;
@@ -211,6 +212,7 @@ static void motor_thread_entry(void *parameter)
 			if(CHANNEL1_B == 1 || CHANNEL2_B == 1 || CHANNEL3_B == 1 || CHANNEL4_B == 1)
 			{
 				TIM3_Stop();
+				tim3_start_flag = 0;
 				key_f = 0;
 				key_r = 1;
 				key_s = 1;

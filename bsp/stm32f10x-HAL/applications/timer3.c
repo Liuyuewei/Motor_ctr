@@ -6,6 +6,7 @@
 #include "common.h"
 #include "log.h"
 #include "rtdevice.h"
+#include "user_mb_app.h"
 
 #define TIM3_DEG	0
 #define TIM3_RES	0
@@ -18,8 +19,7 @@ rt_uint8_t step_r = 4;
 #define MOTOR_SETP3 3
 #define MOTOR_SETP4 4
 
-//两相四拍
-#define DOUBLE	1
+
 #if 1
 //电机1
 #define M1_EN_H		rt_pin_write(eM1_en,1)		//电机1 使能高
@@ -126,6 +126,9 @@ static void motor_run_forward()
 {
 	rt_pin_write(eM1_en,PIN_HIGH);
 	rt_pin_write(eM2_en,PIN_HIGH);
+	rt_uint16_t DOUBLE;
+	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
+	DOUBLE = !usSRegHoldBuf[eDouble_ctr];
 	switch(step_f)
 	{
 		case MOTOR_SETP1:
@@ -193,7 +196,9 @@ static void motor_run_reversal()
 	
 	rt_pin_write(eM1_en,PIN_HIGH);
 	rt_pin_write(eM2_en,PIN_HIGH);
-	
+	rt_uint16_t DOUBLE;
+	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
+	DOUBLE = ! usSRegHoldBuf[eDouble_ctr];
 	switch(step_r)
 	{
 		case MOTOR_SETP1:
