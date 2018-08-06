@@ -23,7 +23,7 @@
 #include "type_def.h"
 #include "string.h"
 
-#define TEM_DEG	1
+#define TEM_DEG	0
 #define TEM_RES	0
 
 #define MLX90614_GET_DATA     0x02    //¶ÁÊý¾Ý
