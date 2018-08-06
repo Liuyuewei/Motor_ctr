@@ -286,10 +286,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			motor_run_reversal();	
 		}
-		else if(key_s == 0)
-		{
-			motor_stop();
-		}
 		LOG(TIM3_DEG,("TIM3 running ......\r\n"));
 	}
 }

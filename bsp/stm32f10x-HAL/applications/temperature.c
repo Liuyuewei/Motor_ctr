@@ -128,7 +128,7 @@ static void tem_thread_entry(void *parameter)
 			LOG(TEM_DEG,("%s\r\n",data));			
 			if(i == 3)
 			LOG(TEM_DEG,("********************\r\n"));
-			rt_thread_delay(RT_TICK_PER_SECOND);	//—” ±1000ms	
+			rt_thread_delay(RT_TICK_PER_SECOND / 2);	//—” ±500ms	
 			
 		}
     }

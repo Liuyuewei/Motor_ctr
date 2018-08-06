@@ -48,7 +48,7 @@
 //定义按键初始值
 rt_uint8_t key_f = 1;	//正转
 rt_uint8_t key_r = 1;	//反转
-rt_uint8_t key_s = 1;	//停止
+rt_uint8_t key_s = 0;	//停止
 //定时器启动标志
 static rt_uint8_t tim3_start_flag = 0;
 
@@ -139,25 +139,34 @@ static void key_scan(void)
 	if(rt_pin_read(eKEY_F) == PIN_LOW)
 	{
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
-		key_f = 0;
-		key_r = 1;
-		key_s = 1;
+//		if(rt_pin_read(eKEY_F) == PIN_LOW)
+//		{
+			key_f = 0;
+			key_r = 1;
+			key_s = 1;
+//		}
 	}
 		
 	else if(rt_pin_read(eKEY_R) == PIN_LOW)
 	{
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
-		key_f = 1;
-		key_r = 0;
-		key_s = 1;
+//		if(rt_pin_read(eKEY_R) == PIN_LOW)
+//		{
+			key_f = 1;
+			key_r = 0;
+			key_s = 1;
+//		}
 	}
 	
 	else if(rt_pin_read(eKEY_S) == PIN_LOW)
 	{
 		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//延时250ms
-		key_f = 1;
-		key_r = 1;
-		key_s = 0;
+//		if(rt_pin_read(eKEY_F) == PIN_LOW)
+//		{
+			key_f = 1;
+			key_r = 1;
+			key_s = 0;
+//		}
 	}
 }
 
@@ -180,8 +189,6 @@ static void motor_thread_entry(void *parameter)
 				TIM3_Start();
 				tim3_start_flag = 1;
 			}
-			
-			
 			key_r = 1;
 			key_s = 1;
 			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
@@ -190,8 +197,7 @@ static void motor_thread_entry(void *parameter)
 				key_f = 1;
 				key_r = 0;
 				key_s = 1;
-			}
-				
+			}	
 		}
 		else if(key_r == 0)
 		{	
@@ -208,7 +214,7 @@ static void motor_thread_entry(void *parameter)
 				key_f = 0;
 				key_r = 1;
 				key_s = 1;
-			}				
+			}		
 		}
 		else if(key_s == 0)
 		{
@@ -216,12 +222,9 @@ static void motor_thread_entry(void *parameter)
 			key_r = 1;
 			key_f = 1;
 			TIM3_Stop();
-		}	
-		else
-		{
-			rt_thread_delay(RT_TICK_PER_SECOND / 4);	//250ms	
 			LOG(MOTOR_DEG,("motor idle !\r\n"));
 		}	
+		rt_thread_delay(RT_TICK_PER_SECOND / 4);	//
     }
 }
 
