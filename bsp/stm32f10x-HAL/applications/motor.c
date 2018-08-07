@@ -9,7 +9,6 @@
 #include "motor.h"
 #include "common.h"
 #include "timer3.h"
-#include "timer4.h"
 #include "log.h"
 
 
@@ -43,8 +42,8 @@
 // 通过测试 ARR最小为13，即1.3ms 频率为 1000/1.3 接近744Hz。
 // 如果ARR再小的话，则motor线程无法及时处理定时器释放的信号量
 // ARR 越大 电机频率越低
-#define ARR1	13		//自动重装载寄存器周期的值
-#define ARR2	100		//自动重装载寄存器周期的值
+#define ARR1	20		//自动重装载寄存器周期的值
+#define ARR2	80		//自动重装载寄存器周期的值
 #define PSC	7200		//时钟频率除数的预分频值
 
 //定义按键初始值
@@ -218,6 +217,7 @@ static void motor_thread_entry(void *parameter)
 			if(CHANNEL1_B == 1 || CHANNEL2_B == 1 || CHANNEL3_B == 1 || CHANNEL4_B == 1)
 			{
 				TIM3_Stop();
+				TIM4_Stop();
 				tim3_start_flag = 0;
 				key_f = 0;
 				key_r = 1;

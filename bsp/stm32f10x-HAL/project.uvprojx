@@ -414,11 +414,6 @@
               <FileType>1</FileType>
               <FilePath>applications\timer3.c</FilePath>
             </File>
-            <File>
-              <FileName>timer4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>applications\timer4.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
