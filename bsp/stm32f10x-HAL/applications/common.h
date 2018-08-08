@@ -4,6 +4,8 @@
 #include "rtthread.h"
 #include "mb.h"
 
+
+
 //定义按键初始值
 extern rt_uint8_t key_f ;	//正转
 extern rt_uint8_t key_r;	//反转
@@ -35,17 +37,17 @@ typedef enum pinName
 	eKEY_S,								//电机停止		PB0
 	
 	/********限位GPIO********/
-	eChannel1_F,						//通道1前限位	PB9
-	eChannel1_B,						//通道1后限位	PC0
+	eChannel1_B,						//通道1前限位	PB9
+	eChannel1_F,						//通道1后限位	PC0
 	
-	eChannel2_F,						//通道2前限位	PB5
-	eChannel2_B,						//通道2后限位	PB6
+	eChannel2_B,						//通道2前限位	PB5
+	eChannel2_F,						//通道2后限位	PB6
 	
-	eChannel3_F,						//通道3前限位	PC12
-	eChannel3_B,						//通道3后限位	PD2
+	eChannel3_B,						//通道3前限位	PC12
+	eChannel3_F,						//通道3后限位	PD2
 	
-	eChannel4_F,						//通道4前限位	PA12
-	eChannel4_B,						//通道4后限位	PA15
+	eChannel4_B,						//通道4前限位	PA12
+	eChannel4_F,						//通道4后限位	PA15
 	
 	/********温度传感器GPIO********/
 	eTem1_SCL,							//通道1温度传感器SCL		PC1
@@ -74,7 +76,9 @@ typedef enum hold_reginst
 	eTem4_h,
 	eTem4_l,
 	eDouble_ctr1,
-	eDouble_ctr2	
+	eDouble_ctr2,
+	eStep1,
+	eStep2
 			
 }hold_reginst_t;
 

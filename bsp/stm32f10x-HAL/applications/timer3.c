@@ -12,8 +12,11 @@
 #define TIM4_DEG	0
 #define TIM3_RES	0
 
-rt_uint8_t step_f = 1;
-rt_uint8_t step_r = 4;
+rt_uint8_t step_f1 = 1;
+rt_uint8_t step_r1 = 4;
+
+rt_uint8_t step_f2 = 1;
+rt_uint8_t step_r2 = 4;
 
 #define MOTOR_SETP1 1
 #define MOTOR_SETP2 2
@@ -117,7 +120,7 @@ void TIM3_Init(rt_uint16_t arr,rt_uint16_t psc)
 	TIM3_Handler.Init.ClockDivision	=	TIM_CLOCKDIVISION_DIV1; 	//时钟分频因子
 	
 	HAL_TIM_Base_Init(&TIM3_Handler); 								//初始化定时器 3
-//	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
+	HAL_TIM_Base_Start_IT(&TIM3_Handler); 							//使能定时器 3 和定时器 3 更新中断
 }
 void TIM4_Init(rt_uint16_t arr,rt_uint16_t psc)
 {
@@ -144,7 +147,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 	if(htim == &TIM4_Handler)
 	{
 		__HAL_RCC_TIM4_CLK_ENABLE(); 									//使能 TIM4 时钟
-		HAL_NVIC_SetPriority(TIM4_IRQn,1,3); 							//设置中断优先级，抢占 1，子优先级 3
+		HAL_NVIC_SetPriority(TIM4_IRQn,2,4); 							//设置中断优先级，抢占 1，子优先级 3
 		HAL_NVIC_EnableIRQ(TIM4_IRQn); 									//开启 ITM4 中断
 	}
 }
@@ -160,13 +163,13 @@ void TIM4_IRQHandler(void)
 	HAL_TIM_IRQHandler(&TIM4_Handler);
 }
 //电机1正转
-static void motor_run_forward()
+static void motor1_run_forward()
 {
 	rt_pin_write(eM1_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
 	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
 	DOUBLE = !usSRegHoldBuf[eDouble_ctr1];
-	switch(step_f)
+	switch(step_f1)
 	{
 		case MOTOR_SETP1:
 			if(DOUBLE)
@@ -177,7 +180,7 @@ static void motor_run_forward()
 			{
 				MOTOR1_STEP1_S;
 			}
-			step_f++;
+			step_f1++;
 		break;
 		
 		case MOTOR_SETP2:
@@ -189,7 +192,7 @@ static void motor_run_forward()
 			{
 				MOTOR1_STEP2_S;
 			}
-			step_f++;
+			step_f1++;
 		break;
 		
 		case MOTOR_SETP3:
@@ -201,7 +204,7 @@ static void motor_run_forward()
 			{
 				MOTOR1_STEP3_S;
 			}
-			step_f++;
+			step_f1++;
 		break;
 		
 		case MOTOR_SETP4:
@@ -213,21 +216,21 @@ static void motor_run_forward()
 			{
 				MOTOR1_STEP4_S;
 			}
-			if(step_f >= 4)
-			step_f = 1;
+			if(step_f1 >= 4)
+			step_f1 = 1;
 		break;				
 	}
 }
 
 //电机1反转
-static void motor_run_reversal()
+static void motor1_run_reversal()
 {
 	
 	rt_pin_write(eM1_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
 	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
 	DOUBLE = ! usSRegHoldBuf[eDouble_ctr1];
-	switch(step_r)
+	switch(step_r1)
 	{
 		case MOTOR_SETP1:
 			if(DOUBLE)
@@ -238,8 +241,8 @@ static void motor_run_reversal()
 			{
 				MOTOR1_STEP1_S;
 			}
-			if(step_r <= 1)
-			step_r = 4;
+			if(step_r1 <= 1)
+			step_r1 = 4;
 		break;
 		
 		case MOTOR_SETP2:
@@ -251,7 +254,7 @@ static void motor_run_reversal()
 			{
 				MOTOR1_STEP2_S;
 			}
-			step_r--;
+			step_r1--;
 		break;
 		
 		case MOTOR_SETP3:
@@ -263,7 +266,7 @@ static void motor_run_reversal()
 			{
 				MOTOR1_STEP3_S;
 			}
-			step_r--;
+			step_r1--;
 		break;
 		
 		case MOTOR_SETP4:
@@ -275,7 +278,7 @@ static void motor_run_reversal()
 			{
 				MOTOR1_STEP4_S;
 			}
-			step_r--;
+			step_r1--;
 		break;				
 	}
 }
@@ -301,9 +304,9 @@ static void motor2_run_forward()
 {
 	rt_pin_write(eM2_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
-	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
+	//如果usSRegHoldBuf[eDouble_ctr2]的值为0，则按两相四排运动。否则为单相四排运功。
 	DOUBLE = !usSRegHoldBuf[eDouble_ctr2];
-	switch(step_f)
+	switch(step_f2)
 	{
 		case MOTOR_SETP1:
 			if(DOUBLE)
@@ -314,7 +317,7 @@ static void motor2_run_forward()
 			{
 				MOTOR2_STEP1_S;	
 			}
-			step_f++;
+			step_f2++;
 		break;
 		
 		case MOTOR_SETP2:
@@ -326,7 +329,7 @@ static void motor2_run_forward()
 			{
 				MOTOR2_STEP2_S;	
 			}
-			step_f++;
+			step_f2++;
 		break;
 		
 		case MOTOR_SETP3:
@@ -338,7 +341,7 @@ static void motor2_run_forward()
 			{
 				MOTOR2_STEP3_S;	
 			}
-			step_f++;
+			step_f2++;
 		break;
 		
 		case MOTOR_SETP4:
@@ -350,8 +353,8 @@ static void motor2_run_forward()
 			{
 				MOTOR2_STEP4_S;	
 			}
-			if(step_f >= 4)
-			step_f = 1;
+			if(step_f2 >= 4)
+			step_f2 = 1;
 		break;				
 	}
 }
@@ -361,9 +364,9 @@ static void motor2_run_reversal()
 {
 	rt_pin_write(eM2_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
-	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
+	//如果usSRegHoldBuf[eDouble_ctr2]的值为0，则按两相四排运动。否则为单相四排运功。
 	DOUBLE = ! usSRegHoldBuf[eDouble_ctr2];
-	switch(step_r)
+	switch(step_r2)
 	{
 		case MOTOR_SETP1:
 			if(DOUBLE)
@@ -374,8 +377,8 @@ static void motor2_run_reversal()
 			{
 				MOTOR2_STEP1_S;	
 			}
-			if(step_r <= 1)
-			step_r = 4;
+			if(step_r2 <= 1)
+			step_r2 = 4;
 		break;
 		
 		case MOTOR_SETP2:
@@ -387,7 +390,7 @@ static void motor2_run_reversal()
 			{
 				MOTOR2_STEP2_S;	
 			}
-			step_r--;
+			step_r2--;
 		break;
 		
 		case MOTOR_SETP3:
@@ -399,7 +402,7 @@ static void motor2_run_reversal()
 			{
 				MOTOR2_STEP3_S;	
 			}
-			step_r--;
+			step_r2--;
 		break;
 		
 		case MOTOR_SETP4:
@@ -411,30 +414,33 @@ static void motor2_run_reversal()
 			{
 				MOTOR2_STEP4_S;	
 			}
-			step_r--;
+			step_r2--;
 		break;				
 	}
 }
 
 
-
+rt_uint8_t count = 0;
 //定时器 3 中断服务函数调用   该函数不能用static定时
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==(&TIM3_Handler))
 	{
+//		count ++;
 		if(key_f == 0)
 		{
-			motor_run_forward();
+			motor1_run_forward();
 		}
 		else if(key_r == 0)
 		{
-			motor_run_reversal();	
+			motor1_run_reversal();	
 		}
+				
+//		(rt_int16_t)usSRegHoldBuf[eStep1] --;
 		LOG(TIM3_DEG,("TIM3 running ......\r\n"));
 	}
 	if(htim==(&TIM4_Handler))
-	{
+	{		
 		if(key_f == 0)
 		{
 			motor2_run_forward();
@@ -443,10 +449,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			motor2_run_reversal();	
 		}
+//		(rt_int16_t)usSRegHoldBuf[eStep2] --;
 		LOG(TIM4_DEG,("TIM4 running ......\r\n"));
 	}
 }
 
-#include "finsh.h"
-MSH_CMD_EXPORT(TIM3_Stop, stop tim3);
 

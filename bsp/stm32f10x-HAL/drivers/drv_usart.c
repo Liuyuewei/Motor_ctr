@@ -244,7 +244,9 @@ int rt_hw_usart_init(void)
     struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
 #if defined(RT_USING_UART1)
     uart = &uart1;
-    config.baud_rate = BAUD_RATE_115200;
+	//串口的波特率如果需要改的话，直接在该处改即可，也可以在线程中通过rt_device_ctr()来更改
+	//如果是modbus用的串口，也可以在modbus初始化串口时定义
+	config.baud_rate = BAUD_RATE_115200;
     serial1.ops    = &stm32_uart_ops;			//此处包含了硬件初始化	lyw
     serial1.config = config;
     MX_USART_UART_Init(&uart->huart);
@@ -268,6 +270,7 @@ int rt_hw_usart_init(void)
 
 #if defined(RT_USING_UART3)
     uart = &uart3;
+	//串口的波特率如果需要改的话，直接在该处改即可，也可以在线程中通过rt_device_ctr()来更改
     config.baud_rate = BAUD_RATE_115200;
     serial3.ops    = &stm32_uart_ops;
     serial3.config = config;
@@ -284,7 +287,8 @@ INIT_BOARD_EXPORT(rt_hw_usart_init);
 
 static void MX_USART_UART_Init(UART_HandleTypeDef *uartHandle)
 {
-    uartHandle->Init.BaudRate = 115200;
+	//串口的波特率在此处不需要改
+    uartHandle->Init.BaudRate = BAUD_RATE_115200;
     uartHandle->Init.WordLength = UART_WORDLENGTH_8B;
     uartHandle->Init.StopBits = UART_STOPBITS_1;
     uartHandle->Init.Parity = UART_PARITY_NONE;
@@ -292,7 +296,6 @@ static void MX_USART_UART_Init(UART_HandleTypeDef *uartHandle)
     uartHandle->Init.HwFlowCtl = UART_HWCONTROL_NONE;
     uartHandle->Init.OverSampling = UART_OVERSAMPLING_16;
     RT_ASSERT(HAL_UART_Init(uartHandle) == HAL_OK);
-
 }
 /* USART2 init function */
 

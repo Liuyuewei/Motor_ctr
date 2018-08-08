@@ -1,6 +1,6 @@
 /*
  * 程序清单：电机控制程序
- * 程序描述：通过定时器来控制gpio的输出，从而控制步进电机
+ * 程序描述：该线程主要是扫描按键及限位传感器
  */
 
 #include <rtthread.h>
@@ -10,7 +10,7 @@
 #include "common.h"
 #include "timer3.h"
 #include "log.h"
-
+#include "user_mb_app.h"
 
 #define MOTOR_DEG	0
 #define MOTOR_RES	0
@@ -42,9 +42,9 @@
 // 通过测试 ARR最小为13，即1.3ms 频率为 1000/1.3 接近744Hz。
 // 如果ARR再小的话，则motor线程无法及时处理定时器释放的信号量
 // ARR 越大 电机频率越低
-#define ARR1	20		//自动重装载寄存器周期的值
-#define ARR2	80		//自动重装载寄存器周期的值
-#define PSC	7200		//时钟频率除数的预分频值
+#define ARR1	26		//自动重装载寄存器周期的值
+#define ARR2	100		//自动重装载寄存器周期的值
+#define PSC		7200 / 2	//时钟频率除数的预分频值
 
 //定义按键初始值
 rt_uint8_t key_f = 1;	//正转
@@ -176,6 +176,7 @@ static void key_scan(void)
 static void motor_thread_entry(void *parameter)
 {
     rt_hw_motor_init();
+//	rt_pin_mode(eLed_run, PIN_MODE_OUTPUT);
 	TIM3_Init(ARR1,PSC - 1);	//初始化定时器并设置中断周期
 	TIM4_Init(ARR2,PSC - 1);
 	//启动之后电机自动往反运动
@@ -183,6 +184,12 @@ static void motor_thread_entry(void *parameter)
     {
 		//用电脑仿真是，按键扫描得到的值一直为低电平。可能是仿真的原因，用硬件测试正常。
 		key_scan();
+//		if((rt_int16_t)usSRegHoldBuf[eStep1] <= 0 || (rt_int16_t)usSRegHoldBuf[eStep2] <= 0)
+//		{
+//			key_f = 1;
+//			key_r = 1;
+//			key_s = 0;
+//		}
 		if(key_f == 0)
 		{
 			//如果

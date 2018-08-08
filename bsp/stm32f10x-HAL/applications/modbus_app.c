@@ -15,7 +15,7 @@
 //从机串口	3
 #define SLAVE_UART	0X03
 //波特率
-#define SLAVE_BaudRate	115200
+#define SLAVE_BaudRate	BAUD_RATE_115200
 
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t modbus_stack[ 512 ];
