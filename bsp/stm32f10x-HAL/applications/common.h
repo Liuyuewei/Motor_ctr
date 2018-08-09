@@ -4,7 +4,9 @@
 #include "rtthread.h"
 #include "mb.h"
 
-
+//丝杆电机程序 有一个运动圈数
+//1：带丝杆电机 0：不带丝杆电机
+#define MOTOR_ScrewRod	1
 
 //定义按键初始值
 extern rt_uint8_t key_f ;	//正转
@@ -81,8 +83,7 @@ typedef enum hold_reginst
 	eTem4_l,
 	eDouble_ctr1,
 	eDouble_ctr2,
-	eStep1,
-	eStep2
+	eCirle
 			
 }hold_reginst_t;
 

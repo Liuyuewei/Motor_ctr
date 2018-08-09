@@ -218,6 +218,7 @@ static void limit_switch_f_scan(void)
 	
 	if(CHANNEL1_F == 1 && CHANNEL2_F == 1 && CHANNEL3_F == 1 && CHANNEL4_F == 1)
 	{
+		
 		TIM3_Stop();
 		TIM4_Stop();
 		tim3_start_flag = 0;
@@ -274,26 +275,31 @@ static void limit_switch_b_scan(void)
 		key_f = 0;
 		key_r = 1;
 		key_s = 1;
+#if MOTOR_ScrewRod		
+		usSRegHoldBuf[eCirle] --;
+		if(usSRegHoldBuf[eCirle] <= 0)
+		{
+			key_f = 1;
+			key_r = 1;
+			key_s = 0;
+		}
+#endif
 	}		
 }
 
 static void motor_thread_entry(void *parameter)
 {
     rt_hw_motor_init();
-//	rt_pin_mode(eLed_run, PIN_MODE_OUTPUT);
 	TIM3_Init(ARR1,PSC - 1);	//初始化定时器并设置中断周期
 	TIM4_Init(ARR2,PSC - 1);
+	//带丝杆电机默认运动3圈
+	usSRegHoldBuf[eCirle] = 3;
+	
 	//启动之后电机自动往反运动
     while (1)
     {
 		//用电脑仿真是，按键扫描得到的值一直为低电平。可能是仿真的原因，用硬件测试正常。
 		key_scan();
-//		if((rt_int16_t)usSRegHoldBuf[eStep1] <= 0 || (rt_int16_t)usSRegHoldBuf[eStep2] <= 0)
-//		{
-//			key_f = 1;
-//			key_r = 1;
-//			key_s = 0;
-//		}
 		if(key_f == 0)
 		{		
 			//如果
