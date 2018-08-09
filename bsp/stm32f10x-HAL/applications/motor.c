@@ -275,7 +275,8 @@ static void limit_switch_b_scan(void)
 		key_f = 0;
 		key_r = 1;
 		key_s = 1;
-#if MOTOR_ScrewRod		
+//´øË¿¸Ëµç»ú
+#ifdef RT_USING_MOTOR_ScrewRod		
 		usSRegHoldBuf[eCirle] --;
 		if(usSRegHoldBuf[eCirle] <= 0)
 		{

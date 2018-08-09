@@ -181,4 +181,12 @@ if RT_USING_SPI
         bool "Using spi2"
         default n
 endif
-
+config RT_USING_MOTOR_ScrewRod
+    bool "Using MOTOR_ScrewRod"
+    default y
+	
+	
+	
+	
+	
+	
