@@ -165,7 +165,7 @@ void TIM4_IRQHandler(void)
 //电机1正转
 static void motor1_run_forward()
 {
-	rt_pin_write(eM1_en,PIN_HIGH);
+//	rt_pin_write(eM1_ch1_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
 	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
 	DOUBLE = !usSRegHoldBuf[eDouble_ctr1];
@@ -226,7 +226,7 @@ static void motor1_run_forward()
 static void motor1_run_reversal()
 {
 	
-	rt_pin_write(eM1_en,PIN_HIGH);
+//	rt_pin_write(eM1_ch1_en,PIN_HIGH);
 	rt_uint16_t DOUBLE;
 	//如果usSRegHoldBuf[eDouble_ctr]的值为0，则按两相四排运动。否则为单相四排运功。
 	DOUBLE = ! usSRegHoldBuf[eDouble_ctr1];
@@ -287,7 +287,10 @@ static void motor1_run_reversal()
 static void motor_stop(void)
 {
 	//使能脚：高使能 初始化
-	rt_pin_write(eM1_en,PIN_LOW);	
+	rt_pin_write(eM1_ch1_en,PIN_LOW);
+	rt_pin_write(eM1_ch2_en,PIN_LOW);
+	rt_pin_write(eM1_ch3_en,PIN_LOW);
+	rt_pin_write(eM1_ch4_en,PIN_LOW);	
 	rt_pin_write(eA1_P,PIN_LOW);
 	rt_pin_write(eA1_N,PIN_LOW);	
 	rt_pin_write(eB1_P,PIN_LOW);
@@ -420,13 +423,11 @@ static void motor2_run_reversal()
 }
 
 
-rt_uint8_t count = 0;
 //定时器 3 中断服务函数调用   该函数不能用static定时
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim==(&TIM3_Handler))
 	{
-//		count ++;
 		if(key_f == 0)
 		{
 			motor1_run_forward();

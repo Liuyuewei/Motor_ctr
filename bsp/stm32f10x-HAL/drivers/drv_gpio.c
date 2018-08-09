@@ -96,7 +96,7 @@ struct pin_index
 //	eBeep_ctrl,                         //蜂鸣器			PB1
 //	
 //	/********卸杯电机GPIO********/
-//	eM1_en,								//卸杯电机使能	PC8
+//	eM1_ch1_en,							//卸杯电机使能	PC8
 //	eA1_P,								//卸杯电机A1+	PC7	
 //	eA1_N,								//卸杯电机A1-	PB15
 //	eB1_P,								//卸杯电机B1+	PB14
@@ -139,6 +139,9 @@ struct pin_index
 //	eTem4_SCL,							//通道4温度传感器SCL		PC10
 //	eTem4_SDA,							//通道4温度传感器SDA		PC11
 
+//	eM1_ch2_en,							//卸杯电机2通道使能		PA3
+//	eM1_ch3_en,							//卸杯电机3通道使能		PA5
+//	eM1_ch4_en,							//卸杯电机4通道使能		PA0
 
 static const struct pin_index pins[] =
 {
@@ -276,7 +279,11 @@ static const struct pin_index pins[] =
 	__STM32_PIN(27,B, 4),
 	//温度传感器4
 	__STM32_PIN(28,C,10),
-	__STM32_PIN(28,C,11),
+	__STM32_PIN(29,C,11),
+	//电机1 通道2.3.4使能
+	__STM32_PIN(30,A, 3),
+	__STM32_PIN(31,A, 5),
+	__STM32_PIN(32,A, 0),
 	
 	
 #endif

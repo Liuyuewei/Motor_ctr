@@ -86,13 +86,19 @@ static struct rt_thread motor_thread;
 void rt_hw_motor_init(void)
 {
 	//电机1
-	rt_pin_mode(eM1_en, PIN_MODE_OUTPUT);
+	rt_pin_mode(eM1_ch1_en, PIN_MODE_OUTPUT);
+	rt_pin_mode(eM1_ch2_en, PIN_MODE_OUTPUT);
+	rt_pin_mode(eM1_ch3_en, PIN_MODE_OUTPUT);
+	rt_pin_mode(eM1_ch4_en, PIN_MODE_OUTPUT);
 	rt_pin_mode(eA1_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eA1_N,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB1_P,  PIN_MODE_OUTPUT);
 	rt_pin_mode(eB1_N,  PIN_MODE_OUTPUT);
 	//使能脚：高使能 初始化
-	rt_pin_write(eM1_en,PIN_LOW);	
+	rt_pin_write(eM1_ch1_en,PIN_LOW);	
+	rt_pin_write(eM1_ch2_en,PIN_LOW);	
+	rt_pin_write(eM1_ch3_en,PIN_LOW);	
+	rt_pin_write(eM1_ch4_en,PIN_LOW);	
 	rt_pin_write(eA1_P,PIN_LOW);
 	rt_pin_write(eA1_N,PIN_LOW);	
 	rt_pin_write(eB1_P,PIN_LOW);
@@ -171,7 +177,105 @@ static void key_scan(void)
 	}
 }
 
-
+//限位开关 前扫描 front
+static void limit_switch_f_scan(void)
+{
+	if(CHANNEL1_F == 1)
+	{
+		rt_pin_write(eM1_ch1_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch1_en,PIN_HIGH);	
+	}
+	
+	if (CHANNEL2_F == 1)
+	{
+		rt_pin_write(eM1_ch2_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch2_en,PIN_HIGH);	
+	}
+	
+	if (CHANNEL3_F == 1)
+	{
+		rt_pin_write(eM1_ch3_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch3_en,PIN_HIGH);	
+	}
+	
+	if (CHANNEL4_F == 1)
+	{
+		rt_pin_write(eM1_ch4_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch4_en,PIN_HIGH);	
+	}
+	
+	if(CHANNEL1_F == 1 && CHANNEL2_F == 1 && CHANNEL3_F == 1 && CHANNEL4_F == 1)
+	{
+		TIM3_Stop();
+		TIM4_Stop();
+		tim3_start_flag = 0;
+		key_f = 1;
+		key_r = 0;
+		key_s = 1;
+	}	
+}
+//限位开关 后扫描 back
+static void limit_switch_b_scan(void)
+{
+	if(CHANNEL1_B == 1)
+	{
+		rt_pin_write(eM1_ch1_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch1_en,PIN_HIGH);	
+	}
+	
+	if (CHANNEL2_B == 1)
+	{
+		rt_pin_write(eM1_ch2_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch2_en,PIN_HIGH);	
+	}
+	
+	if (CHANNEL3_B == 1)
+	{
+		rt_pin_write(eM1_ch3_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch3_en,PIN_HIGH);	
+	}
+	
+	if (CHANNEL4_B == 1)
+	{
+		rt_pin_write(eM1_ch4_en,PIN_LOW);
+	}
+	else
+	{
+		rt_pin_write(eM1_ch4_en,PIN_HIGH);	
+	}
+	
+	
+	if(CHANNEL1_B == 1 && CHANNEL2_B == 1 && CHANNEL3_B == 1 && CHANNEL4_B == 1)
+	{
+		TIM3_Stop();
+		TIM4_Stop();
+		tim3_start_flag = 0;
+		key_f = 0;
+		key_r = 1;
+		key_s = 1;
+	}		
+}
 
 static void motor_thread_entry(void *parameter)
 {
@@ -191,7 +295,7 @@ static void motor_thread_entry(void *parameter)
 //			key_s = 0;
 //		}
 		if(key_f == 0)
-		{
+		{		
 			//如果
 			if(!tim3_start_flag)
 			{
@@ -201,15 +305,8 @@ static void motor_thread_entry(void *parameter)
 			}
 			key_r = 1;
 			key_s = 1;
-			if(CHANNEL1_F == 1 || CHANNEL2_F == 1 || CHANNEL3_F == 1 || CHANNEL4_F == 1)
-			{
-				TIM3_Stop();
-				TIM4_Stop();
-				tim3_start_flag = 0;
-				key_f = 1;
-				key_r = 0;
-				key_s = 1;
-			}	
+			//限位开关 front 扫描
+			limit_switch_f_scan();
 		}
 		else if(key_r == 0)
 		{	
@@ -219,17 +316,12 @@ static void motor_thread_entry(void *parameter)
 				TIM4_Start();
 				tim3_start_flag = 1;
 			}
+			
 			key_f = 1;
 			key_s = 1;
-			if(CHANNEL1_B == 1 || CHANNEL2_B == 1 || CHANNEL3_B == 1 || CHANNEL4_B == 1)
-			{
-				TIM3_Stop();
-				TIM4_Stop();
-				tim3_start_flag = 0;
-				key_f = 0;
-				key_r = 1;
-				key_s = 1;
-			}		
+			//限位开关 back 扫描
+			limit_switch_b_scan();
+		
 		}
 		else if(key_s == 0)
 		{
